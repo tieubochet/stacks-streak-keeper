@@ -18,8 +18,8 @@ export const fetchUserStats = async (address: string): Promise<UserStats | null>
 
   try {
     const result = await callReadOnlyFunction({
-      contractAddress: CONTRACT_ADDRESS,
-      contractName: CONTRACT_NAME,
+      contractAddress: SPHMWZQ1KW03KHYPADC81Q6XXS284S7QCHRAS3A8,
+      contractName: SPHMWZQ1KW03KHYPADC81Q6XXS284S7QCHRAS3A8.daily-checkin-v2,
       functionName: 'get-user',
       functionArgs: [standardPrincipalCV(address)],
       senderAddress: address,
