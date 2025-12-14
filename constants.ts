@@ -6,9 +6,9 @@ export const userSession = new UserSession({ appConfig });
 
 // Contract Configuration
 // NOTE: These should be updated to the actual deployed contract address on Testnet/Mainnet
-export const CONTRACT_ADDRESS = 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM'; 
-export const CONTRACT_NAME = 'streak-counter';
-export const NETWORK = 'testnet'; // 'testnet' or 'mainnet'
+export const CONTRACT_ADDRESS = 'SPHMWZQ1KW03KHYPADC81Q6XXS284S7QCHRAS3A8'; 
+export const CONTRACT_NAME = 'daily-checkin-v2';
+export const NETWORK = 'mainnet'; // 'testnet' or 'mainnet'
 
 // UI Constants
 export const APP_NAME = "StreakProtocol";
