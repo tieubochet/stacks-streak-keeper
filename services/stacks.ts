@@ -1,21 +1,20 @@
-import { userSession, CONTRACT_ADDRESS, CONTRACT_NAME, MINT_FUNCTION } from '../constants';
-// Chú ý: Nếu bạn đang test, hãy dùng StacksTestnet thay vì StacksMainnet
-import { StacksMainnet, StacksTestnet } from '@stacks/network'; 
+import { userSession, CONTRACT_ADDRESS, CONTRACT_NAME } from '../constants';
+// Mặc định dùng Testnet để dev. Khi deploy thật thì đổi sang StacksMainnet
+import { StacksMainnet, StacksTestnet } from '@stacks/network';
 import { 
   callReadOnlyFunction, 
   standardPrincipalCV, 
   ClarityType,
-  PostConditionMode // Đã thêm import này
+  PostConditionMode // Cần thiết để cho phép ví nhận NFT tự động
 } from '@stacks/transactions';
 import { openContractCall } from '@stacks/connect';
 import { UserStats, LeaderboardEntry } from '../types';
 
-// LƯU Ý QUAN TRỌNG: 
-// Hãy đổi thành "new StacksTestnet()" nếu bạn đang chạy thử nghiệm và không muốn mất tiền thật.
+// CẤU HÌNH MẠNG: Đổi thành "new StacksMainnet()" khi chạy chính thức
 const getNetwork = () => new StacksMainnet(); 
 
 /**
- * Fetches the user stats from the smart contract
+ * Lấy thông tin chỉ số người dùng (Streak, Max Streak, Total Checkins)
  */
 export const fetchUserStats = async (address: string): Promise<UserStats | null> => {
   const network = getNetwork();
@@ -30,10 +29,12 @@ export const fetchUserStats = async (address: string): Promise<UserStats | null>
       network,
     });
 
+    // Trường hợp user chưa từng chơi: Trả về null hoặc object rỗng
     if (result.type === ClarityType.OptionalNone) {
       return { currentStreak: 0, maxStreak: 0, totalCheckins: 0 };
     }
 
+    // Trường hợp có dữ liệu
     if (result.type === ClarityType.OptionalSome && result.value.type === ClarityType.Tuple) {
       const tupleData = (result.value as any).data;
 
@@ -60,7 +61,7 @@ export const fetchUserStats = async (address: string): Promise<UserStats | null>
 };
 
 /**
- * Check SIP-009 Balance (To see if user owns the NFT)
+ * Kiểm tra số dư NFT (SIP-009)
  */
 export const fetchNftBalance = async (address: string): Promise<number> => {
   const network = getNetwork();
@@ -79,13 +80,13 @@ export const fetchNftBalance = async (address: string): Promise<number> => {
     }
     return 0;
   } catch (e) {
-    console.warn("Contract might not support standard SIP-009 get-balance or error occurred.");
+    console.warn("Lỗi khi check balance NFT:", e);
     return 0;
   }
 };
 
 /**
- * Fetch stats for multiple users to build an On-Chain Leaderboard
+ * Lấy dữ liệu Bảng xếp hạng (Leaderboard)
  */
 export const fetchLeaderboardData = async (
   candidateAddresses: string[], 
@@ -94,8 +95,6 @@ export const fetchLeaderboardData = async (
   
   const allAddresses = new Set(candidateAddresses);
   if (currentUserAddress) allAddresses.add(currentUserAddress);
-  
-  const entries: LeaderboardEntry[] = [];
   
   const promises = Array.from(allAddresses).map(async (addr) => {
     const stats = await fetchUserStats(addr);
@@ -114,6 +113,7 @@ export const fetchLeaderboardData = async (
   const results = await Promise.all(promises);
   const validResults = results.filter((r): r is LeaderboardEntry => r !== null);
   
+  // Sắp xếp: Ưu tiên Streak cao -> Sau đó đến Tổng checkin
   validResults.sort((a, b) => {
     if (b.streak !== a.streak) return b.streak - a.streak;
     return b.total - a.total;
@@ -126,7 +126,8 @@ export const fetchLeaderboardData = async (
 };
 
 /**
- * Initiates the Check-In transaction
+ * Thực hiện Check-In
+ * Hàm này sẽ tự động Mint NFT nếu user đạt streak 7
  */
 export const performCheckIn = async (onFinish: (data: any) => void, onCancel: () => void) => {
   const network = getNetwork();
@@ -137,8 +138,8 @@ export const performCheckIn = async (onFinish: (data: any) => void, onCancel: ()
     contractName: CONTRACT_NAME,
     functionName: 'check-in',
     functionArgs: [], 
-    // Check-in thường không chuyển tài sản nên không bắt buộc PostConditionMode.Allow, 
-    // nhưng thêm vào cũng không sao nếu contract có logic phức tạp.
+    // QUAN TRỌNG: Allow mode để contract có quyền gửi NFT vào ví bạn
+    postConditionMode: PostConditionMode.Allow, 
     onFinish,
     onCancel,
     appDetails: {
@@ -149,42 +150,18 @@ export const performCheckIn = async (onFinish: (data: any) => void, onCancel: ()
 };
 
 /**
- * Initiates the Mint NFT transaction
- */
-export const performMintNft = async (onFinish: (data: any) => void, onCancel: () => void) => {
-  const network = getNetwork();
-  
-  await openContractCall({
-    network,
-    contractAddress: CONTRACT_ADDRESS,
-    contractName: CONTRACT_NAME,
-    functionName: MINT_FUNCTION,
-    functionArgs: [], 
-    postConditionMode: PostConditionMode.Allow, // <-- Đã sửa: Cho phép nhận NFT
-    onFinish,
-    onCancel,
-    appDetails: {
-      name: 'StreakProtocol',
-      icon: window.location.origin + '/favicon.ico',
-    },
-  });
-};
-
-/**
- * Authenticate User
+ * Các hàm xác thực User
  */
 export const authenticate = () => {
   userSession.handlePendingSignIn().then(() => {
     window.location.reload();
-  }).catch(() => {
-     // do nothing
-  });
+  }).catch(() => {});
 };
 
 export const getUserAddress = (): string | null => {
   if (userSession.isUserSignedIn()) {
     try {
-      return userSession.loadUserData().profile.stxAddress.mainnet;
+      return userSession.loadUserData().profile.stxAddress.mainnet; // Hoặc testnet tùy config ví
     } catch (e) {
       return null;
     }
