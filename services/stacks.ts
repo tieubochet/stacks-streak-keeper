@@ -1,15 +1,15 @@
 import { userSession, CONTRACT_ADDRESS, CONTRACT_NAME, MINT_FUNCTION } from '../constants';
-// 1. Sửa import tại đây: Đổi STACKS_MAINNET thành StacksMainnet
-import { StacksMainnet } from '@stacks/network';
+// Import StacksMainnet (Class) thay vì hằng số cũ
+import { StacksMainnet } from '@stacks/network'; 
 import { 
-  fetchCallReadOnlyFunction, 
+  callReadOnlyFunction, // ĐÃ SỬA: Dùng callReadOnlyFunction thay vì fetchCallReadOnlyFunction
   standardPrincipalCV, 
   ClarityType
 } from '@stacks/transactions';
 import { openContractCall } from '@stacks/connect';
 import { UserStats } from '../types';
 
-// 2. Sửa cách khởi tạo network tại đây
+// Khởi tạo network bằng 'new'
 const getNetwork = () => new StacksMainnet(); 
 
 /**
@@ -19,7 +19,8 @@ export const fetchUserStats = async (address: string): Promise<UserStats | null>
   const network = getNetwork();
 
   try {
-    const result = await fetchCallReadOnlyFunction({
+    // ĐÃ SỬA: Gọi callReadOnlyFunction
+    const result = await callReadOnlyFunction({
       contractAddress: CONTRACT_ADDRESS,
       contractName: CONTRACT_NAME,
       functionName: 'get-user',
@@ -28,8 +29,8 @@ export const fetchUserStats = async (address: string): Promise<UserStats | null>
       network,
     });
 
-    // Manual parsing to avoid cvToValue compatibility issues
-    // Result is (optional (tuple ...))
+    // Manual parsing logic
+    // Result trả về là ClarityValue
     
     // Check for 'none'
     if (result.type === ClarityType.OptionalNone) {
@@ -40,8 +41,6 @@ export const fetchUserStats = async (address: string): Promise<UserStats | null>
     if (result.type === ClarityType.OptionalSome && result.value.type === ClarityType.Tuple) {
       const tupleData = (result.value as any).data;
 
-      // Helper to safely extract number from UIntCV
-      // Note: value is BigInt, we convert to Number for UI
       const getNum = (cv: any) => {
         if (cv && cv.type === ClarityType.UInt) {
           return Number(cv.value);
@@ -75,12 +74,12 @@ export const performCheckIn = async (onFinish: (data: any) => void, onCancel: ()
     contractAddress: CONTRACT_ADDRESS,
     contractName: CONTRACT_NAME,
     functionName: 'check-in',
-    functionArgs: [], // No arguments needed for check-in
+    functionArgs: [], 
     onFinish,
     onCancel,
     appDetails: {
       name: 'StreakProtocol',
-      icon: window.location.origin + '/favicon.ico', // Placeholder
+      icon: window.location.origin + '/favicon.ico',
     },
   });
 };
@@ -95,7 +94,7 @@ export const performMintNft = async (onFinish: (data: any) => void, onCancel: ()
     network,
     contractAddress: CONTRACT_ADDRESS,
     contractName: CONTRACT_NAME,
-    functionName: MINT_FUNCTION, // e.g., 'claim-streak-nft'
+    functionName: MINT_FUNCTION,
     functionArgs: [], 
     onFinish,
     onCancel,
@@ -120,7 +119,6 @@ export const authenticate = () => {
 export const getUserAddress = (): string | null => {
   if (userSession.isUserSignedIn()) {
     try {
-      // Return mainnet address
       return userSession.loadUserData().profile.stxAddress.mainnet;
     } catch (e) {
       return null;
