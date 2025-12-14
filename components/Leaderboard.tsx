@@ -1,61 +1,31 @@
-import React, { useMemo } from 'react';
-import { UserStats, LeaderboardEntry } from '../types';
-import { MOCK_LEADERBOARD_DATA } from '../constants';
-import { Medal, User, Flame } from 'lucide-react';
+import React from 'react';
+import { LeaderboardEntry } from '../types';
+import { Medal, User, Flame, Loader2 } from 'lucide-react';
 
 interface LeaderboardProps {
-  currentUserAddress: string | null;
-  currentUserStats: UserStats | null;
+  data: LeaderboardEntry[];
+  isLoading: boolean;
 }
 
-export const Leaderboard: React.FC<LeaderboardProps> = ({ currentUserAddress, currentUserStats }) => {
+export const Leaderboard: React.FC<LeaderboardProps> = ({ data, isLoading }) => {
   
-  // Merge mock data with current user data to simulate a live leaderboard
-  const leaderboardData = useMemo(() => {
-    let data: LeaderboardEntry[] = MOCK_LEADERBOARD_DATA.map((entry, index) => ({
-      ...entry,
-      rank: 0, // Will recalculate
-      isCurrentUser: false
-    }));
-
-    if (currentUserAddress && currentUserStats) {
-      // Check if user is already in mock data (unlikely for random address, but good practice)
-      const existingIndex = data.findIndex(d => d.address === currentUserAddress);
-      
-      const userEntry = {
-        address: currentUserAddress,
-        streak: currentUserStats.currentStreak,
-        total: currentUserStats.totalCheckins,
-        isCurrentUser: true,
-        rank: 0
-      };
-
-      if (existingIndex >= 0) {
-        data[existingIndex] = userEntry;
-      } else {
-        data.push(userEntry);
-      }
-    }
-
-    // Sort by Streak desc, then Total desc
-    data.sort((a, b) => {
-      if (b.streak !== a.streak) return b.streak - a.streak;
-      return b.total - a.total;
-    });
-
-    // Assign ranks
-    return data.map((entry, idx) => ({ ...entry, rank: idx + 1 }));
-
-  }, [currentUserAddress, currentUserStats]);
+  if (isLoading && data.length === 0) {
+    return (
+      <div className="rounded-xl border border-slate-800 bg-slate-950/50 p-8 text-center backdrop-blur">
+        <Loader2 className="mx-auto h-8 w-8 animate-spin text-orange-500" />
+        <p className="mt-2 text-slate-400">Loading on-chain rankings...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="rounded-xl border border-slate-800 bg-slate-950/50 backdrop-blur">
       <div className="border-b border-slate-800 p-6">
         <h2 className="flex items-center gap-2 text-lg font-semibold text-white">
           <Medal className="h-5 w-5 text-yellow-500" />
-          Global Leaderboard
+          Live Leaderboard
         </h2>
-        <p className="mt-1 text-sm text-slate-400">Top streakers on the Stacks network.</p>
+        <p className="mt-1 text-sm text-slate-400">Top streakers (Real-time On-chain Data).</p>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-left text-sm">
@@ -68,7 +38,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ currentUserAddress, cu
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-800">
-            {leaderboardData.map((entry) => (
+            {data.map((entry) => (
               <tr 
                 key={entry.address} 
                 className={`transition-colors hover:bg-slate-900/50 ${entry.isCurrentUser ? 'bg-orange-500/5 hover:bg-orange-500/10' : ''}`}

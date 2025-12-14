@@ -3,14 +3,24 @@ import { Header } from './components/Header';
 import { StatsCard } from './components/StatsCard';
 import { Leaderboard } from './components/Leaderboard';
 import { MintCard } from './components/MintCard';
-import { userSession } from './constants';
-import { fetchUserStats, performCheckIn, performMintNft, getUserAddress } from './services/stacks';
-import { UserStats, AppState } from './types';
+import { userSession, LEADERBOARD_CANDIDATES } from './constants';
+import { 
+  fetchUserStats, 
+  performCheckIn, 
+  performMintNft, 
+  getUserAddress,
+  fetchLeaderboardData,
+  fetchNftBalance 
+} from './services/stacks';
+import { UserStats, AppState, LeaderboardEntry } from './types';
 import { CheckCircle2, Loader2, Zap } from 'lucide-react';
 
 const App: React.FC = () => {
   const [address, setAddress] = useState<string | null>(null);
   const [userStats, setUserStats] = useState<UserStats | null>(null);
+  const [nftBalance, setNftBalance] = useState<number>(0);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+  
   const [appState, setAppState] = useState<AppState>(AppState.IDLE);
   const [txId, setTxId] = useState<string | null>(null);
   const [mintTxId, setMintTxId] = useState<string | null>(null);
@@ -33,8 +43,18 @@ const App: React.FC = () => {
 
   const loadData = useCallback(async (addr: string) => {
     setAppState(AppState.LOADING_DATA);
-    const stats = await fetchUserStats(addr);
+    
+    // Parallel fetch for speed
+    const [stats, balance, lbData] = await Promise.all([
+      fetchUserStats(addr),
+      fetchNftBalance(addr),
+      fetchLeaderboardData(LEADERBOARD_CANDIDATES, addr)
+    ]);
+
     setUserStats(stats);
+    setNftBalance(balance);
+    setLeaderboard(lbData);
+    
     setAppState(AppState.READY);
   }, []);
 
@@ -42,6 +62,7 @@ const App: React.FC = () => {
     userSession.signUserOut();
     setAddress(null);
     setUserStats(null);
+    setLeaderboard([]);
     setAppState(AppState.IDLE);
   };
 
@@ -55,6 +76,8 @@ const App: React.FC = () => {
         (data) => {
           setTxId(data.txId);
           setAppState(AppState.READY);
+          // Optimistic update could happen here, but reloading data is safer
+          setTimeout(() => loadData(address), 5000); 
         },
         () => {
           setAppState(AppState.READY); // User cancelled
@@ -161,6 +184,7 @@ const App: React.FC = () => {
             {/* NFT Mint Section */}
             <MintCard 
               stats={userStats} 
+              nftBalance={nftBalance}
               isMinting={appState === AppState.TX_PENDING && !txId && !mintTxId} // Rough state check
               onMint={handleMintNft}
               txId={mintTxId}
@@ -169,8 +193,8 @@ const App: React.FC = () => {
             {/* Leaderboard Section */}
             <div className="pt-4">
               <Leaderboard 
-                currentUserAddress={address} 
-                currentUserStats={userStats} 
+                data={leaderboard}
+                isLoading={appState === AppState.LOADING_DATA}
               />
             </div>
 

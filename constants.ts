@@ -6,22 +6,23 @@ export const userSession = new UserSession({ appConfig });
 
 // Contract Configuration
 export const CONTRACT_ADDRESS = 'SPHMWZQ1KW03KHYPADC81Q6XXS284S7QCHRAS3A8'; 
-export const CONTRACT_NAME = 'daily-checkin-v2';
+export const CONTRACT_NAME = 'teeboo-streak';
 export const NETWORK = 'mainnet'; 
 
 // NFT Configuration
-// Assumes the mint function is in the same contract. 
-// If it's a separate SIP-009 contract, update the contract name/address in the service call.
 export const MINT_FUNCTION = 'claim-streak-nft'; 
 
 // UI Constants
 export const APP_NAME = "StreakProtocol";
 export const EXPLORER_BASE_URL = "https://explorer.hiro.so";
 
-// Mock Data for Leaderboard (since the provided contract doesn't support get-all)
-export const MOCK_LEADERBOARD_DATA = [
-  { address: 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE', streak: 42, total: 156 },
-  { address: 'SP1P72Z3704VMT3DMHPP2CB8TGQWGDBHD3RPR9GZS', streak: 38, total: 120 },
-  { address: 'SP2J6EF482VRV4K497Z538TNC2EAJPJ4F81963F01', streak: 12, total: 45 },
-  { address: 'SP3D6PV2ACBPEKYJTCMH7HEN02KP87QSP8KTEH335', streak: 5, total: 12 },
+// Candidate Addresses for the "Global" Leaderboard
+// In a real production app without an indexer, we often track a list of known active users 
+// or fetch recent events. Here we use a list of known active addresses to query on-chain.
+export const LEADERBOARD_CANDIDATES = [
+  'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE',
+  'SP1P72Z3704VMT3DMHPP2CB8TGQWGDBHD3RPR9GZS',
+  'SP2J6EF482VRV4K497Z538TNC2EAJPJ4F81963F01',
+  'SP3D6PV2ACBPEKYJTCMH7HEN02KP87QSP8KTEH335',
+  'SPHMWZQ1KW03KHYPADC81Q6XXS284S7QCHRAS3A8', // The deployer
 ];

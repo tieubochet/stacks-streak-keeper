@@ -24,11 +24,11 @@ This project is actively participating in the Stacks Builder Challenges. It demo
 
 ## ⛓️ Smart Contract Details
 
-The application interacts with the `daily-checkin-v2` contract deployed on Stacks Mainnet.
+The application interacts with the `teeboo-streak` contract deployed on Stacks Mainnet.
 
 | Network | Contract Name | Address |
 | :--- | :--- | :--- |
-| **Mainnet** | `daily-checkin-v2` | [`SPHMWZQ1KW03KHYPADC81Q6XXS284S7QCHRAS3A8`](https://explorer.hiro.so/txid/SPHMWZQ1KW03KHYPADC81Q6XXS284S7QCHRAS3A8.daily-checkin-v2?chain=mainnet) |
+| **Mainnet** | `teeboo-streak` | [`SPHMWZQ1KW03KHYPADC81Q6XXS284S7QCHRAS3A8`](https://explorer.hiro.so/txid/SPHMWZQ1KW03KHYPADC81Q6XXS284S7QCHRAS3A8.teeboo-streak?chain=mainnet) |
 
 **Functions used:**
 1.  `check-in`: Records a daily action, increments streak count, and updates the timestamp.
