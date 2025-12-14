@@ -1,5 +1,5 @@
 import { userSession, CONTRACT_ADDRESS, CONTRACT_NAME } from '../constants';
-import { StacksTestnet } from '@stacks/network';
+import { StacksMainnet } from '@stacks/network';
 import { 
   callReadOnlyFunction, 
   standardPrincipalCV, 
@@ -8,7 +8,7 @@ import {
 import { openContractCall } from '@stacks/connect';
 import { UserStats } from '../types';
 
-const getNetwork = () => new StacksTestnet(); // Default to Testnet
+const getNetwork = () => new StacksMainnet(); // Default to Mainnet
 
 /**
  * Fetches the user stats from the smart contract
@@ -18,8 +18,8 @@ export const fetchUserStats = async (address: string): Promise<UserStats | null>
 
   try {
     const result = await callReadOnlyFunction({
-      contractAddress: SPHMWZQ1KW03KHYPADC81Q6XXS284S7QCHRAS3A8,
-      contractName: SPHMWZQ1KW03KHYPADC81Q6XXS284S7QCHRAS3A8.daily-checkin-v2,
+      contractAddress: CONTRACT_ADDRESS,
+      contractName: CONTRACT_NAME,
       functionName: 'get-user',
       functionArgs: [standardPrincipalCV(address)],
       senderAddress: address,
@@ -97,7 +97,8 @@ export const authenticate = () => {
 export const getUserAddress = (): string | null => {
   if (userSession.isUserSignedIn()) {
     try {
-      return userSession.loadUserData().profile.stxAddress.testnet;
+      // Return mainnet address
+      return userSession.loadUserData().profile.stxAddress.mainnet;
     } catch (e) {
       return null;
     }

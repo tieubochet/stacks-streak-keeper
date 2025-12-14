@@ -98,7 +98,7 @@ const App: React.FC = () => {
               <div className="flex items-center gap-4">
                 {txId && (
                    <a 
-                     href={`https://explorer.hiro.so/txid/${txId}?chain=testnet`} 
+                     href={`https://explorer.hiro.so/txid/${txId}?chain=mainnet`} 
                      target="_blank" 
                      rel="noreferrer"
                      className="flex items-center gap-2 text-xs text-orange-400 hover:underline"
