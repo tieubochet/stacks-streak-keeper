@@ -1,5 +1,5 @@
 import { userSession, CONTRACT_ADDRESS, CONTRACT_NAME, MINT_FUNCTION } from '../constants';
-import { STACKS_MAINNET } from '@stacks/network';
+import { StacksMainnet  } from '@stacks/network';
 import { 
   fetchCallReadOnlyFunction, 
   standardPrincipalCV, 
@@ -8,7 +8,7 @@ import {
 import { openContractCall } from '@stacks/connect';
 import { UserStats, LeaderboardEntry } from '../types';
 
-const getNetwork = () => STACKS_MAINNET; 
+const getNetwork = () => StacksMainnet(); 
 
 /**
  * Fetches the user stats from the smart contract
