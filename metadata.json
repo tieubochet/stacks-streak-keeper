@@ -1,0 +1,5 @@
+{
+  "name": "Stacks Streak Keeper",
+  "description": "A decentralized habit tracking application on the Stacks blockchain. Connect your wallet, check-in daily, and build your on-chain streak.",
+  "requestFramePermissions": []
+}
