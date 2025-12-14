@@ -1,5 +1,6 @@
 import { userSession, CONTRACT_ADDRESS, CONTRACT_NAME, MINT_FUNCTION } from '../constants';
-import { StacksMainnet  } from '@stacks/network';
+// SỬA ĐỔI 1: Import StacksMainnet (class) thay vì hằng số
+import { StacksMainnet } from '@stacks/network';
 import { 
   fetchCallReadOnlyFunction, 
   standardPrincipalCV, 
@@ -8,7 +9,8 @@ import {
 import { openContractCall } from '@stacks/connect';
 import { UserStats, LeaderboardEntry } from '../types';
 
-const getNetwork = () => StacksMainnet(); 
+// SỬA ĐỔI 2: Khởi tạo network bằng 'new'
+const getNetwork = () => new StacksMainnet(); 
 
 /**
  * Fetches the user stats from the smart contract
