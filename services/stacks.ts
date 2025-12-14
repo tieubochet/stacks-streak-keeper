@@ -1,15 +1,14 @@
 import { userSession, CONTRACT_ADDRESS, CONTRACT_NAME, MINT_FUNCTION } from '../constants';
-// SỬA ĐỔI 1: Import StacksMainnet (class) thay vì hằng số
 import { StacksMainnet } from '@stacks/network';
+// SỬA ĐỔI: Dùng callReadOnlyFunction thay cho fetchCallReadOnlyFunction
 import { 
-  fetchCallReadOnlyFunction, 
+  callReadOnlyFunction, 
   standardPrincipalCV, 
   ClarityType
 } from '@stacks/transactions';
 import { openContractCall } from '@stacks/connect';
 import { UserStats, LeaderboardEntry } from '../types';
 
-// SỬA ĐỔI 2: Khởi tạo network bằng 'new'
 const getNetwork = () => new StacksMainnet(); 
 
 /**
@@ -19,7 +18,8 @@ export const fetchUserStats = async (address: string): Promise<UserStats | null>
   const network = getNetwork();
 
   try {
-    const result = await fetchCallReadOnlyFunction({
+    // SỬA ĐỔI: Gọi callReadOnlyFunction
+    const result = await callReadOnlyFunction({
       contractAddress: CONTRACT_ADDRESS,
       contractName: CONTRACT_NAME,
       functionName: 'get-user',
@@ -64,7 +64,8 @@ export const fetchUserStats = async (address: string): Promise<UserStats | null>
 export const fetchNftBalance = async (address: string): Promise<number> => {
   const network = getNetwork();
   try {
-    const result = await fetchCallReadOnlyFunction({
+    // SỬA ĐỔI: Gọi callReadOnlyFunction
+    const result = await callReadOnlyFunction({
       contractAddress: CONTRACT_ADDRESS,
       contractName: CONTRACT_NAME,
       functionName: 'get-balance', // Standard SIP-009 function
@@ -169,8 +170,6 @@ export const performMintNft = async (onFinish: (data: any) => void, onCancel: ()
       name: 'StreakProtocol',
       icon: window.location.origin + '/favicon.ico',
     },
-    // Note: In a production app, we would add postConditions here to ensure 
-    // the user receives the NFT asset they expect.
   });
 };
 
