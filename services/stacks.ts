@@ -1,5 +1,6 @@
 import { userSession, CONTRACT_ADDRESS, CONTRACT_NAME, MINT_FUNCTION } from '../constants';
-import { STACKS_MAINNET } from '@stacks/network';
+// 1. Sửa import tại đây: Đổi STACKS_MAINNET thành StacksMainnet
+import { StacksMainnet } from '@stacks/network';
 import { 
   fetchCallReadOnlyFunction, 
   standardPrincipalCV, 
@@ -8,7 +9,8 @@ import {
 import { openContractCall } from '@stacks/connect';
 import { UserStats } from '../types';
 
-const getNetwork = () => STACKS_MAINNET; // Default to Mainnet
+// 2. Sửa cách khởi tạo network tại đây
+const getNetwork = () => new StacksMainnet(); 
 
 /**
  * Fetches the user stats from the smart contract
