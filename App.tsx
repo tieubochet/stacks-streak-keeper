@@ -2,20 +2,20 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Header } from './components/Header';
 import { StatsCard } from './components/StatsCard';
 import { Leaderboard } from './components/Leaderboard';
-import { MintCard } from './components/MintCard';
+import StreakProgressBar from './components/StreakProgressBar'; // Import component mới
 import { userSession, LEADERBOARD_CANDIDATES } from './constants';
 import { 
   fetchUserStats, 
   performCheckIn, 
-  performMintNft, 
   getUserAddress,
   fetchLeaderboardData,
   fetchNftBalance 
 } from './services/stacks';
 import { UserStats, AppState, LeaderboardEntry } from './types';
-import { CheckCircle2, Loader2, Zap } from 'lucide-react';
+import { CheckCircle2, Loader2, Zap, Trophy } from 'lucide-react';
 
 const App: React.FC = () => {
+  // --- State Management ---
   const [address, setAddress] = useState<string | null>(null);
   const [userStats, setUserStats] = useState<UserStats | null>(null);
   const [nftBalance, setNftBalance] = useState<number>(0);
@@ -23,9 +23,8 @@ const App: React.FC = () => {
   
   const [appState, setAppState] = useState<AppState>(AppState.IDLE);
   const [txId, setTxId] = useState<string | null>(null);
-  const [mintTxId, setMintTxId] = useState<string | null>(null);
 
-  // Initialize session and data
+  // --- Initialization ---
   useEffect(() => {
     if (userSession.isSignInPending()) {
       userSession.handlePendingSignIn().then(() => {
@@ -41,23 +40,29 @@ const App: React.FC = () => {
     }
   }, []);
 
+  // --- Data Fetching ---
   const loadData = useCallback(async (addr: string) => {
     setAppState(AppState.LOADING_DATA);
     
-    // Parallel fetch for speed
-    const [stats, balance, lbData] = await Promise.all([
-      fetchUserStats(addr),
-      fetchNftBalance(addr),
-      fetchLeaderboardData(LEADERBOARD_CANDIDATES, addr)
-    ]);
+    try {
+      // Fetch tất cả dữ liệu song song
+      const [stats, balance, lbData] = await Promise.all([
+        fetchUserStats(addr),
+        fetchNftBalance(addr),
+        fetchLeaderboardData(LEADERBOARD_CANDIDATES, addr)
+      ]);
 
-    setUserStats(stats);
-    setNftBalance(balance);
-    setLeaderboard(lbData);
-    
-    setAppState(AppState.READY);
+      setUserStats(stats);
+      setNftBalance(balance);
+      setLeaderboard(lbData);
+      setAppState(AppState.READY);
+    } catch (error) {
+      console.error("Error loading data:", error);
+      setAppState(AppState.READY);
+    }
   }, []);
 
+  // --- Handlers ---
   const handleDisconnect = () => {
     userSession.signUserOut();
     setAddress(null);
@@ -71,16 +76,17 @@ const App: React.FC = () => {
 
     setAppState(AppState.TX_PENDING);
     setTxId(null);
+    
     try {
       await performCheckIn(
         (data) => {
           setTxId(data.txId);
           setAppState(AppState.READY);
-          // Optimistic update could happen here, but reloading data is safer
+          // Reload dữ liệu sau 5s để cập nhật UI (Optimistic update)
           setTimeout(() => loadData(address), 5000); 
         },
         () => {
-          setAppState(AppState.READY); // User cancelled
+          setAppState(AppState.READY); // User hủy giao dịch
         }
       );
     } catch (e) {
@@ -89,34 +95,14 @@ const App: React.FC = () => {
     }
   };
 
-  const handleMintNft = async () => {
-    if (!address) return;
-
-    setAppState(AppState.TX_PENDING);
-    setMintTxId(null);
-    try {
-      await performMintNft(
-        (data) => {
-          setMintTxId(data.txId);
-          setAppState(AppState.READY);
-        },
-        () => {
-          setAppState(AppState.READY);
-        }
-      );
-    } catch (e) {
-      console.error(e);
-      setAppState(AppState.READY);
-    }
-  };
-
+  // --- Render ---
   return (
     <div className="min-h-screen bg-[#0f172a] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] text-slate-200">
       <Header address={address} onDisconnect={handleDisconnect} />
 
       <main className="container mx-auto max-w-5xl px-4 py-8">
         {!address ? (
-          // Landing State
+          // === LANDING STATE ===
           <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
             <div className="mb-6 rounded-full bg-orange-500/10 p-6 ring-1 ring-orange-500/20">
               <Zap className="h-16 w-16 text-orange-500" />
@@ -129,49 +115,63 @@ const App: React.FC = () => {
             </p>
           </div>
         ) : (
-          // Dashboard State
+          // === DASHBOARD STATE ===
           <div className="space-y-8">
             
-            {/* Welcome & Action Area */}
+            {/* Header Area & Welcome */}
             <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
               <div>
                 <h1 className="text-3xl font-bold text-white">Dashboard</h1>
                 <p className="text-slate-400">Manage your daily activity.</p>
               </div>
               
-              <div className="flex items-center gap-4">
-                {txId && (
-                   <a 
-                     href={`https://explorer.hiro.so/txid/${txId}?chain=mainnet`} 
-                     target="_blank" 
-                     rel="noreferrer"
-                     className="flex items-center gap-2 text-xs text-orange-400 hover:underline"
-                   >
-                     View Pending Check-in
-                   </a>
-                )}
-                
-                <button
+              {/* NFT Status Badge */}
+              {nftBalance > 0 && (
+                <div className="flex items-center gap-2 rounded-full bg-yellow-500/10 px-4 py-2 text-yellow-500 ring-1 ring-yellow-500/20">
+                  <Trophy className="h-5 w-5" />
+                  <span className="font-bold">Streak Master NFT Owner</span>
+                </div>
+              )}
+            </div>
+
+            {/* PROGRESS BAR SECTION (New) */}
+            <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-6 backdrop-blur">
+              <StreakProgressBar currentStreak={userStats?.currentStreak || 0} />
+              
+              {/* Check-In Button Area */}
+              <div className="mt-6 flex flex-col items-center justify-center gap-4">
+                 <button
                   onClick={handleCheckIn}
                   disabled={appState === AppState.TX_PENDING || appState === AppState.LOADING_DATA}
-                  className={`relative flex items-center gap-2 rounded-lg px-6 py-3 font-semibold text-white shadow-lg transition-all
+                  className={`relative flex items-center gap-2 rounded-lg px-8 py-4 text-lg font-bold text-white shadow-xl transition-all
                     ${appState === AppState.TX_PENDING 
                       ? 'cursor-not-allowed bg-slate-700 opacity-50' 
-                      : 'bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-400 hover:to-red-500 hover:shadow-orange-500/25'
+                      : 'bg-gradient-to-r from-orange-500 to-red-600 hover:scale-105 hover:from-orange-400 hover:to-red-500 hover:shadow-orange-500/25'
                     }`}
                 >
-                  {appState === AppState.TX_PENDING && !mintTxId ? ( // Only show loading here if not minting
+                  {appState === AppState.TX_PENDING ? (
                     <>
-                      <Loader2 className="h-5 w-5 animate-spin" />
-                      Signing...
+                      <Loader2 className="h-6 w-6 animate-spin" />
+                      Processing...
                     </>
                   ) : (
                     <>
-                      <CheckCircle2 className="h-5 w-5" />
-                      Check-In Now
+                      <CheckCircle2 className="h-6 w-6" />
+                      Daily Check-In
                     </>
                   )}
                 </button>
+
+                {txId && (
+                  <a 
+                    href={`https://explorer.hiro.so/txid/${txId}?chain=testnet`} 
+                    target="_blank" 
+                    rel="noreferrer"
+                    className="text-sm text-orange-400 hover:underline"
+                  >
+                    View transaction in explorer
+                  </a>
+                )}
               </div>
             </div>
 
@@ -179,15 +179,6 @@ const App: React.FC = () => {
             <StatsCard 
               stats={userStats} 
               isLoading={appState === AppState.LOADING_DATA} 
-            />
-
-            {/* NFT Mint Section */}
-            <MintCard 
-              stats={userStats} 
-              nftBalance={nftBalance}
-              isMinting={appState === AppState.TX_PENDING && !txId && !mintTxId} // Rough state check
-              onMint={handleMintNft}
-              txId={mintTxId}
             />
 
             {/* Leaderboard Section */}
