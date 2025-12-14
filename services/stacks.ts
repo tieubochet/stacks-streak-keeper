@@ -1,14 +1,17 @@
 import { userSession, CONTRACT_ADDRESS, CONTRACT_NAME, MINT_FUNCTION } from '../constants';
-import { StacksMainnet } from '@stacks/network';
-// SỬA ĐỔI: Dùng callReadOnlyFunction thay cho fetchCallReadOnlyFunction
+// Chú ý: Nếu bạn đang test, hãy dùng StacksTestnet thay vì StacksMainnet
+import { StacksMainnet, StacksTestnet } from '@stacks/network'; 
 import { 
   callReadOnlyFunction, 
   standardPrincipalCV, 
-  ClarityType
+  ClarityType,
+  PostConditionMode // Đã thêm import này
 } from '@stacks/transactions';
 import { openContractCall } from '@stacks/connect';
 import { UserStats, LeaderboardEntry } from '../types';
 
+// LƯU Ý QUAN TRỌNG: 
+// Hãy đổi thành "new StacksTestnet()" nếu bạn đang chạy thử nghiệm và không muốn mất tiền thật.
 const getNetwork = () => new StacksMainnet(); 
 
 /**
@@ -18,7 +21,6 @@ export const fetchUserStats = async (address: string): Promise<UserStats | null>
   const network = getNetwork();
 
   try {
-    // SỬA ĐỔI: Gọi callReadOnlyFunction
     const result = await callReadOnlyFunction({
       contractAddress: CONTRACT_ADDRESS,
       contractName: CONTRACT_NAME,
@@ -28,7 +30,6 @@ export const fetchUserStats = async (address: string): Promise<UserStats | null>
       network,
     });
 
-    // Result is (optional (tuple ...))
     if (result.type === ClarityType.OptionalNone) {
       return { currentStreak: 0, maxStreak: 0, totalCheckins: 0 };
     }
@@ -64,17 +65,15 @@ export const fetchUserStats = async (address: string): Promise<UserStats | null>
 export const fetchNftBalance = async (address: string): Promise<number> => {
   const network = getNetwork();
   try {
-    // SỬA ĐỔI: Gọi callReadOnlyFunction
     const result = await callReadOnlyFunction({
       contractAddress: CONTRACT_ADDRESS,
       contractName: CONTRACT_NAME,
-      functionName: 'get-balance', // Standard SIP-009 function
+      functionName: 'get-balance', 
       functionArgs: [standardPrincipalCV(address)],
       senderAddress: address,
       network,
     });
     
-    // SIP-009 get-balance returns (response uint uint)
     if (result.type === ClarityType.ResponseOk && result.value.type === ClarityType.UInt) {
       return Number(result.value.value);
     }
@@ -93,13 +92,11 @@ export const fetchLeaderboardData = async (
   currentUserAddress: string | null
 ): Promise<LeaderboardEntry[]> => {
   
-  // Ensure unique addresses
   const allAddresses = new Set(candidateAddresses);
   if (currentUserAddress) allAddresses.add(currentUserAddress);
   
   const entries: LeaderboardEntry[] = [];
   
-  // Fetch in parallel
   const promises = Array.from(allAddresses).map(async (addr) => {
     const stats = await fetchUserStats(addr);
     if (stats) {
@@ -115,8 +112,6 @@ export const fetchLeaderboardData = async (
   });
 
   const results = await Promise.all(promises);
-  
-  // Filter nulls and sort
   const validResults = results.filter((r): r is LeaderboardEntry => r !== null);
   
   validResults.sort((a, b) => {
@@ -124,7 +119,6 @@ export const fetchLeaderboardData = async (
     return b.total - a.total;
   });
 
-  // Assign ranks
   return validResults.map((entry, index) => ({
     ...entry,
     rank: index + 1
@@ -143,6 +137,8 @@ export const performCheckIn = async (onFinish: (data: any) => void, onCancel: ()
     contractName: CONTRACT_NAME,
     functionName: 'check-in',
     functionArgs: [], 
+    // Check-in thường không chuyển tài sản nên không bắt buộc PostConditionMode.Allow, 
+    // nhưng thêm vào cũng không sao nếu contract có logic phức tạp.
     onFinish,
     onCancel,
     appDetails: {
@@ -164,6 +160,7 @@ export const performMintNft = async (onFinish: (data: any) => void, onCancel: ()
     contractName: CONTRACT_NAME,
     functionName: MINT_FUNCTION,
     functionArgs: [], 
+    postConditionMode: PostConditionMode.Allow, // <-- Đã sửa: Cho phép nhận NFT
     onFinish,
     onCancel,
     appDetails: {
