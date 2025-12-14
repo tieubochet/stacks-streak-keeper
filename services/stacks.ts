@@ -1,14 +1,14 @@
-import { userSession, CONTRACT_ADDRESS, CONTRACT_NAME } from '../constants';
-import { StacksMainnet } from '@stacks/network';
+import { userSession, CONTRACT_ADDRESS, CONTRACT_NAME, MINT_FUNCTION } from '../constants';
+import { STACKS_MAINNET } from '@stacks/network';
 import { 
-  callReadOnlyFunction, 
+  fetchCallReadOnlyFunction, 
   standardPrincipalCV, 
   ClarityType
 } from '@stacks/transactions';
 import { openContractCall } from '@stacks/connect';
 import { UserStats } from '../types';
 
-const getNetwork = () => new StacksMainnet(); // Default to Mainnet
+const getNetwork = () => STACKS_MAINNET; // Default to Mainnet
 
 /**
  * Fetches the user stats from the smart contract
@@ -17,7 +17,7 @@ export const fetchUserStats = async (address: string): Promise<UserStats | null>
   const network = getNetwork();
 
   try {
-    const result = await callReadOnlyFunction({
+    const result = await fetchCallReadOnlyFunction({
       contractAddress: CONTRACT_ADDRESS,
       contractName: CONTRACT_NAME,
       functionName: 'get-user',
@@ -36,7 +36,7 @@ export const fetchUserStats = async (address: string): Promise<UserStats | null>
 
     // Check for 'some' and ensure it wraps a Tuple
     if (result.type === ClarityType.OptionalSome && result.value.type === ClarityType.Tuple) {
-      const tupleData = result.value.data;
+      const tupleData = (result.value as any).data;
 
       // Helper to safely extract number from UIntCV
       // Note: value is BigInt, we convert to Number for UI
@@ -79,6 +79,27 @@ export const performCheckIn = async (onFinish: (data: any) => void, onCancel: ()
     appDetails: {
       name: 'StreakProtocol',
       icon: window.location.origin + '/favicon.ico', // Placeholder
+    },
+  });
+};
+
+/**
+ * Initiates the Mint NFT transaction
+ */
+export const performMintNft = async (onFinish: (data: any) => void, onCancel: () => void) => {
+  const network = getNetwork();
+  
+  await openContractCall({
+    network,
+    contractAddress: CONTRACT_ADDRESS,
+    contractName: CONTRACT_NAME,
+    functionName: MINT_FUNCTION, // e.g., 'claim-streak-nft'
+    functionArgs: [], 
+    onFinish,
+    onCancel,
+    appDetails: {
+      name: 'StreakProtocol',
+      icon: window.location.origin + '/favicon.ico',
     },
   });
 };

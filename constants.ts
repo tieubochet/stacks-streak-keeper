@@ -9,6 +9,11 @@ export const CONTRACT_ADDRESS = 'SPHMWZQ1KW03KHYPADC81Q6XXS284S7QCHRAS3A8';
 export const CONTRACT_NAME = 'daily-checkin-v2';
 export const NETWORK = 'mainnet'; 
 
+// NFT Configuration
+// Assumes the mint function is in the same contract. 
+// If it's a separate SIP-009 contract, update the contract name/address in the service call.
+export const MINT_FUNCTION = 'claim-streak-nft'; 
+
 // UI Constants
 export const APP_NAME = "StreakProtocol";
 export const EXPLORER_BASE_URL = "https://explorer.hiro.so";

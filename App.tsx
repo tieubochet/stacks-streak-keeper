@@ -2,8 +2,9 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Header } from './components/Header';
 import { StatsCard } from './components/StatsCard';
 import { Leaderboard } from './components/Leaderboard';
+import { MintCard } from './components/MintCard';
 import { userSession } from './constants';
-import { fetchUserStats, performCheckIn, getUserAddress } from './services/stacks';
+import { fetchUserStats, performCheckIn, performMintNft, getUserAddress } from './services/stacks';
 import { UserStats, AppState } from './types';
 import { CheckCircle2, Loader2, Zap } from 'lucide-react';
 
@@ -12,6 +13,7 @@ const App: React.FC = () => {
   const [userStats, setUserStats] = useState<UserStats | null>(null);
   const [appState, setAppState] = useState<AppState>(AppState.IDLE);
   const [txId, setTxId] = useState<string | null>(null);
+  const [mintTxId, setMintTxId] = useState<string | null>(null);
 
   // Initialize session and data
   useEffect(() => {
@@ -47,17 +49,36 @@ const App: React.FC = () => {
     if (!address) return;
 
     setAppState(AppState.TX_PENDING);
+    setTxId(null);
     try {
       await performCheckIn(
         (data) => {
           setTxId(data.txId);
           setAppState(AppState.READY);
-          // Optimistic update could go here, but since it's blockchain, 
-          // we usually show a "Pending" state or link to explorer.
-          // For UX, we'll just show the success message with TX link.
         },
         () => {
           setAppState(AppState.READY); // User cancelled
+        }
+      );
+    } catch (e) {
+      console.error(e);
+      setAppState(AppState.READY);
+    }
+  };
+
+  const handleMintNft = async () => {
+    if (!address) return;
+
+    setAppState(AppState.TX_PENDING);
+    setMintTxId(null);
+    try {
+      await performMintNft(
+        (data) => {
+          setMintTxId(data.txId);
+          setAppState(AppState.READY);
+        },
+        () => {
+          setAppState(AppState.READY);
         }
       );
     } catch (e) {
@@ -103,7 +124,7 @@ const App: React.FC = () => {
                      rel="noreferrer"
                      className="flex items-center gap-2 text-xs text-orange-400 hover:underline"
                    >
-                     View Pending TX
+                     View Pending Check-in
                    </a>
                 )}
                 
@@ -116,7 +137,7 @@ const App: React.FC = () => {
                       : 'bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-400 hover:to-red-500 hover:shadow-orange-500/25'
                     }`}
                 >
-                  {appState === AppState.TX_PENDING ? (
+                  {appState === AppState.TX_PENDING && !mintTxId ? ( // Only show loading here if not minting
                     <>
                       <Loader2 className="h-5 w-5 animate-spin" />
                       Signing...
@@ -137,8 +158,16 @@ const App: React.FC = () => {
               isLoading={appState === AppState.LOADING_DATA} 
             />
 
+            {/* NFT Mint Section */}
+            <MintCard 
+              stats={userStats} 
+              isMinting={appState === AppState.TX_PENDING && !txId && !mintTxId} // Rough state check
+              onMint={handleMintNft}
+              txId={mintTxId}
+            />
+
             {/* Leaderboard Section */}
-            <div className="pt-8">
+            <div className="pt-4">
               <Leaderboard 
                 currentUserAddress={address} 
                 currentUserStats={userStats} 
