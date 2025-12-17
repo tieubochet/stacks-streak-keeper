@@ -36,7 +36,7 @@ The application interacts with the `teeboo-streak` contract deployed on Stacks M
 3.  `claim-streak-nft`: Mints a SIP-009 compliant NFT based on user progress.
 
 Integrated Hiro Chainhooks to push real-time notifications to Telegram community channel.
-![Telegram Bot Notification](img/screenshot.png)
+![Telegram Bot Notification](./public/img/screenshot.png)
 ---
 
 ## 🚀 Features
