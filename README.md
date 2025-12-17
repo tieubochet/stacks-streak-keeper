@@ -35,8 +35,13 @@ The application interacts with the `teeboo-streak` contract deployed on Stacks M
 2.  `get-user`: Read-only function to fetch current streak, max streak, and total check-ins.
 3.  `claim-streak-nft`: Mints a SIP-009 compliant NFT based on user progress.
 
-**Integrated Hiro Chainhooks to push real-time notifications to Telegram community channel**
+---
+
+## 🔔 Chainhook Integration
+
+Integrated Hiro Chainhooks to push real-time notifications to Telegram community channel
 ![Telegram Bot Notification](./public/img/screenshot.png)
+
 ---
 
 ## 🚀 Features
