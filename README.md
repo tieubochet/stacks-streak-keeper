@@ -39,8 +39,10 @@ The application interacts with the `teeboo-streak` contract deployed on Stacks M
 
 ## 🔔 Chainhook Integration
 
-Integrated Hiro Chainhooks to push real-time notifications to Telegram community channel
-![Telegram Bot Notification](./public/img/screenshot.png)
+I have integrated **Hiro Chainhooks** to track on-chain activities in real-time.
+When a user performs a `check-in`, the system captures the event and sends a notification to the community Telegram channel via a Vercel Serverless Function.
+
+![Telegram Bot Notification](./public/img/screenshot.jpg)
 
 ---
 
