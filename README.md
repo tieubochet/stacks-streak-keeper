@@ -1,101 +1,82 @@
-# Stacks Streak Keeper ⚡
+# 🟧 Stacks Streak Keeper
 
-> **Build your on-chain reputation through consistency.**
-
-**StreakProtocol** is a decentralized habit-tracking application built on the Stacks blockchain. It allows users to "check-in" daily, recording their consistency immutably on Bitcoin layers, and mint SIP-009 NFTs to represent their achievements.
-
-![Stacks](https://img.shields.io/badge/Stacks-Mainnet-purple?style=for-the-badge)
-![React](https://img.shields.io/badge/React-18-blue?style=for-the-badge)
-![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+A fully on-chain **daily streak tracking dApp** built on **Stacks**, showcasing smart contract activity, real user interactions, and real-time onchain event processing using **Hiro Chainhooks**.
 
 ---
 
-## 🏆 Stacks Builder Challenges Submission
+## 🧠 What does this project do?
 
-This project is actively participating in the Stacks Builder Challenges. It demonstrates a complete dApp lifecycle including smart contract integration, wallet authentication, and transaction signing.
+Stacks Streak Keeper allows users to:
 
-### Key Integration Highlights
-*   **Smart Contract Deployment:** The core logic is deployed on Stacks Mainnet.
-*   **@stacks/connect:** Used for seamless wallet authentication (Hiro Wallet, Xverse) and initiating transaction signing flows.
-*   **@stacks/transactions:** Used for `callReadOnlyFunction` to fetch user stats and `openContractCall` for writing state to the blockchain.
-*   **SIP-009 Standard:** Implements NFT minting functionality for streak milestones.
+- 🔐 Connect their Stacks wallet (Hiro / Xverse)
+- ✅ Check in once per day (on-chain transaction)
+- 🔥 Maintain a daily streak stored in a Stacks smart contract
+- 🏆 Mint milestone NFTs based on streak achievements
+- 📊 View leaderboard and personal streak stats
+- 🔔 React to on-chain events in real time using **Hiro Chainhooks**
 
----
-
-## ⛓️ Smart Contract Details
-
-The application interacts with the `teeboo-streak` contract deployed on Stacks Mainnet.
-
-| Network | Contract Name | Address |
-| :--- | :--- | :--- |
-| **Mainnet** | `teeboo-streak` | [`SPHMWZQ1KW03KHYPADC81Q6XXS284S7QCHRAS3A8`](https://explorer.hiro.so/txid/SPHMWZQ1KW03KHYPADC81Q6XXS284S7QCHRAS3A8.teeboo-streak?chain=mainnet) |
-
-**Functions used:**
-1.  `check-in`: Records a daily action, increments streak count, and updates the timestamp.
-2.  `get-user`: Read-only function to fetch current streak, max streak, and total check-ins.
-3.  `claim-streak-nft`: Mints a SIP-009 compliant NFT based on user progress.
+All streak data and rewards are **verifiable on-chain**.
 
 ---
 
-## 🔔 Chainhook Integration
+## 🛠️ Tech Stack
 
-I have integrated **Hiro Chainhooks** to track on-chain activities in real-time.
-When a user performs a `check-in`, the system captures the event and sends a notification to the community Telegram channel via a Vercel Serverless Function.
+### Blockchain
+- **Stacks blockchain**
+- **Clarity smart contracts**
+- SIP-009 NFTs (milestone rewards)
 
-![Telegram Bot Notification](./public/img/screenshot.jpg)
+### Frontend
+- React + TypeScript
+- `@stacks/connect`
+- `@stacks/transactions`
 
----
-
-## 🚀 Features
-
-*   **Wallet Connection:** Secure authentication using Stacks native wallets.
-*   **Daily Check-in:** execute an on-chain transaction to prove your activity for the day.
-*   **Real-time Dashboard:** View your Current Streak, Max Streak, and Total Check-ins fetched directly from contract storage.
-*   **NFT Minting:** Claim a "Streak Master" NFT badge when you reach milestones.
-*   **Global Leaderboard:** Compare your consistency against other addresses in the ecosystem.
-
----
-
-## 🛠 Tech Stack
-
-*   **Frontend:** React, TypeScript, Vite
-*   **Styling:** TailwindCSS
-*   **Blockchain SDKs:**
-    *   `@stacks/connect`: Auth & Transaction UI.
-    *   `@stacks/network`: Network configuration (Mainnet).
-    *   `@stacks/transactions`: Data formatting (CV) and API calls.
+### Backend / Infra
+- **Hiro Chainhooks** (Week 2 challenge focus)
+- Serverless endpoints (Vercel)
+- Telegram notification bot (on-chain event driven)
 
 ---
 
-## 📦 Installation & Run
+## ⛓️ Smart Contract Activity
 
-1.  **Clone the repository**
-    ```bash
-    git clone https://github.com/tieubochet/stacks-streak-keeper.git
-    cd stacks-streak-keeper
-    ```
+The deployed contracts handle:
 
-2.  **Install dependencies**
-    ```bash
-    npm install
-    ```
+- Daily check-in transactions
+- Streak state tracking (current / longest streak)
+- NFT minting on milestone completion
 
-3.  **Run local development server**
-    ```bash
-    npm run dev
-    ```
-
-4.  **Build for production**
-    ```bash
-    npm run build
-    ```
+These contracts generate **real user transactions and on-chain events**, which are consumed by Chainhooks.
 
 ---
 
-## 🤝 Contributing
+## 🔗 Hiro Chainhooks 
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+This project uses **Hiro Chainhooks** to listen to on-chain Stacks events in real time.
+
+Chainhooks are configured to:
+
+- Detect successful `check-in` contract calls
+- React immediately to streak updates
+- Trigger off-chain actions (notifications, indexing, analytics)
+
+This demonstrates **event-driven architecture on Stacks**
 
 ---
+
+## 🚀 Live Deployment
+
+- Frontend: Deployed and accessible
+- Smart contracts: Deployed on Stacks
+- Chainhooks: Actively running and processing events
+
+---
+
+This repository intentionally demonstrates:
+
+- ✅ Active Stacks smart contracts
+- ✅ Usage of `@stacks/connect` and `@stacks/transactions`
+- ✅ GitHub contributions during the challenge window
+- ✅ Real-time on-chain event handling via **Hiro Chainhooks**
 
 *Built with ❤️ for the Bitcoin & Stacks Ecosystem.*

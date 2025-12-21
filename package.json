@@ -14,7 +14,8 @@
     "@stacks/transactions": "^6.15.0",
     "lucide-react": "^0.400.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "@hirosystems/chainhooks-client": "^x.x.x"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",

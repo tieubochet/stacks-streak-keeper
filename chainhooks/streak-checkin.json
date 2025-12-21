@@ -1,0 +1,19 @@
+{
+  "name": "streak-checker",
+  "version": 1,
+  "chain": "stacks",
+  "networks": ["mainnet"],
+  "event_types": ["contract_call"],
+  "contract_calls": [
+    {
+      "contract_identifier": "SPHMWZQ1KW03KHYPADC81Q6XXS284S7QCHRAS3A8.teeboo-streak",
+      "method": "check-in"
+    }
+  ],
+  "actions": [
+    {
+      "type": "http_post",
+      "url": "https://stacks-streak-keeper.vercel.app/api/webhook"
+    }
+  ]
+}
