@@ -13,7 +13,7 @@ import { openContractCall } from '@stacks/connect';
 import { UserStats, LeaderboardEntry, GlobalStory } from '../types';
 
 // Return the network instance.
-const getNetwork = () => StacksMainnet; 
+const getNetwork = () => new StacksMainnet();
 
 export const fetchUserStats = async (address: string): Promise<UserStats | null> => {
   const network = getNetwork();
@@ -42,7 +42,7 @@ export const fetchUserStats = async (address: string): Promise<UserStats | null>
 export const fetchGlobalStory = async (): Promise<GlobalStory> => {
   const network = getNetwork();
   try {
-    const result = await fetchCallReadOnlyFunction({
+    const result = await callReadOnlyFunction({
       contractAddress: CONTRACT_ADDRESS,
       contractName: DIARY_CONTRACT,
       functionName: 'get-full-story',
@@ -66,7 +66,7 @@ export const fetchGlobalStory = async (): Promise<GlobalStory> => {
 export const fetchContributors = async (): Promise<string[]> => {
     const network = getNetwork();
     try {
-      const result = await fetchCallReadOnlyFunction({
+      const result = await callReadOnlyFunction({
         contractAddress: CONTRACT_ADDRESS,
         contractName: DIARY_CONTRACT,
         functionName: 'get-contributors',
