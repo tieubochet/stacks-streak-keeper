@@ -1,31 +1,30 @@
+
 import React, { useEffect, useState, useCallback } from 'react';
 import { Header } from './components/Header';
 import { StatsCard } from './components/StatsCard';
 import { Leaderboard } from './components/Leaderboard';
+import { StoryMode } from './components/StoryMode';
 import StreakProgressBar from './components/StreakProgressBar';
-import { DiaryForm } from "./components/DiaryForm";
 import { userSession, LEADERBOARD_CANDIDATES } from './constants';
 import { 
   fetchUserStats, 
   performCheckIn, 
   getUserAddress,
-  fetchLeaderboardData,
-  fetchNftBalance 
+  fetchGlobalStory,
+  performMintStory
 } from './services/stacks';
-import { UserStats, AppState, LeaderboardEntry } from './types';
-import { CheckCircle2, Loader2, Zap, Trophy } from 'lucide-react';
+import { UserStats, AppState, LeaderboardEntry, ActiveTab, GlobalStory } from './types';
+import { CheckCircle2, Loader2, Zap, LayoutDashboard, PenTool } from 'lucide-react';
 
 const App: React.FC = () => {
-  // --- State Management ---
   const [address, setAddress] = useState<string | null>(null);
   const [userStats, setUserStats] = useState<UserStats | null>(null);
-  const [nftBalance, setNftBalance] = useState<number>(0);
-  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [globalStory, setGlobalStory] = useState<GlobalStory>({ fullContent: "", lastWord: "", contributors: [] });
   
+  const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard');
   const [appState, setAppState] = useState<AppState>(AppState.IDLE);
   const [txId, setTxId] = useState<string | null>(null);
 
-  // --- Initialization ---
   useEffect(() => {
     if (userSession.isSignInPending()) {
       userSession.handlePendingSignIn().then(() => {
@@ -39,167 +38,152 @@ const App: React.FC = () => {
       setAddress(addr);
       if (addr) loadData(addr);
     }
+    loadStory();
   }, []);
 
-  // --- Data Fetching ---
   const loadData = useCallback(async (addr: string) => {
     setAppState(AppState.LOADING_DATA);
-    
     try {
-      
-      const [stats, balance, lbData] = await Promise.all([
-        fetchUserStats(addr),
-        fetchNftBalance(addr),
-        fetchLeaderboardData(LEADERBOARD_CANDIDATES, addr)
-      ]);
-
+      const stats = await fetchUserStats(addr);
       setUserStats(stats);
-      setNftBalance(balance);
-      setLeaderboard(lbData);
       setAppState(AppState.READY);
     } catch (error) {
-      console.error("Error loading data:", error);
       setAppState(AppState.READY);
     }
   }, []);
 
-  // --- Handlers ---
+  const loadStory = async () => {
+    const story = await fetchGlobalStory();
+    setGlobalStory(story);
+  };
+
   const handleDisconnect = () => {
     userSession.signUserOut();
     setAddress(null);
     setUserStats(null);
-    setLeaderboard([]);
     setAppState(AppState.IDLE);
   };
 
   const handleCheckIn = async () => {
     if (!address) return;
-
     setAppState(AppState.TX_PENDING);
-    setTxId(null);
-    
     try {
       await performCheckIn(
         (data) => {
           setTxId(data.txId);
           setAppState(AppState.READY);
-        
-          setTimeout(() => loadData(address), 5000); 
+          setTimeout(() => loadData(address), 8000); 
         },
-        () => {
-          setAppState(AppState.READY); 
-        }
+        () => setAppState(AppState.READY)
       );
     } catch (e) {
-      console.error(e);
       setAppState(AppState.READY);
     }
   };
 
-  // --- Render ---
+  const handleMintStoryPart = async (content: string, word: string) => {
+    if (!address) return;
+    setAppState(AppState.TX_PENDING);
+    try {
+      await performMintStory(content, word, (data) => {
+        setTxId(data.txId);
+        setAppState(AppState.READY);
+        setTimeout(loadStory, 8000);
+      });
+    } catch (e) {
+      setAppState(AppState.READY);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-[#0f172a] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] text-slate-200">
+    <div className="min-h-screen bg-[#0f172a] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] text-slate-200 pb-12">
       <Header address={address} onDisconnect={handleDisconnect} />
 
       <main className="container mx-auto max-w-5xl px-4 py-8">
-        {!address ? (
-          // === LANDING STATE ===
+        {!address && activeTab !== 'story' ? (
           <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
             <div className="mb-6 rounded-full bg-orange-500/10 p-6 ring-1 ring-orange-500/20">
               <Zap className="h-16 w-16 text-orange-500" />
             </div>
-            <h1 className="mb-4 text-4xl font-extrabold tracking-tight text-white sm:text-6xl">
-              Build Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-600">On-Chain Streak</span>
+            <h1 className="mb-4 text-4xl font-extrabold tracking-tight text-white sm:text-7xl">
+              Consistency <br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-600">Meets Storytelling</span>
             </h1>
-            <p className="mb-8 max-w-2xl text-lg text-slate-400">
-              Consistency is key. Check-in daily on the Stacks blockchain, earn your reputation, and compete on the global leaderboard.
-            </p>
+            <button
+              onClick={() => setActiveTab('story')}
+              className="mt-4 text-orange-400 hover:text-orange-300 font-medium"
+            >
+              View Global Story →
+            </button>
           </div>
         ) : (
-          // === DASHBOARD STATE ===
           <div className="space-y-8">
-            
-            {/* Header Area & Welcome */}
             <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-              <div>
-                <h1 className="text-3xl font-bold text-white">Dashboard</h1>
-                <p className="text-slate-400">Manage your daily activity.</p>
+              <div className="flex rounded-xl bg-slate-900/80 p-1 ring-1 ring-slate-800 shadow-2xl backdrop-blur">
+                <button 
+                  onClick={() => setActiveTab('dashboard')}
+                  className={`flex items-center gap-2 rounded-lg px-6 py-2.5 text-sm font-bold transition-all ${activeTab === 'dashboard' ? 'bg-slate-800 text-white shadow-sm' : 'text-slate-500 hover:text-slate-300'}`}
+                >
+                  <LayoutDashboard size={18} />
+                  Dashboard
+                </button>
+                <button 
+                  onClick={() => setActiveTab('story')}
+                  className={`flex items-center gap-2 rounded-lg px-6 py-2.5 text-sm font-bold transition-all ${activeTab === 'story' ? 'bg-slate-800 text-white shadow-sm' : 'text-slate-500 hover:text-slate-300'}`}
+                >
+                  <PenTool size={18} />
+                  Story Mode
+                </button>
               </div>
               
-              {/* NFT Status Badge */}
-              {nftBalance > 0 && (
-                <div className="flex items-center gap-2 rounded-full bg-yellow-500/10 px-4 py-2 text-yellow-500 ring-1 ring-yellow-500/20">
-                  <Trophy className="h-5 w-5" />
-                  <span className="font-bold">Streak Master NFT Owner</span>
-                </div>
+              {activeTab === 'dashboard' && (
+                <button
+                  onClick={handleCheckIn}
+                  disabled={appState === AppState.TX_PENDING}
+                  className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-orange-500 to-red-600 px-8 py-3 font-bold text-white shadow-xl hover:scale-105 transition-all active:scale-95"
+                >
+                  {appState === AppState.TX_PENDING ? <Loader2 className="animate-spin h-5 w-5" /> : <CheckCircle2 size={20} />}
+                  Daily Check-In
+                </button>
               )}
             </div>
 
-            {/* PROGRESS BAR SECTION (New) */}
-            <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-6 backdrop-blur">
-              <StreakProgressBar currentStreak={userStats?.currentStreak || 0} />
-              
-              {/* Check-In Button Area */}
-              <div className="mt-6 flex flex-col items-center justify-center gap-4">
-                 <button
-                  onClick={handleCheckIn}
-                  disabled={appState === AppState.TX_PENDING || appState === AppState.LOADING_DATA}
-                  className={`relative flex items-center gap-2 rounded-lg px-8 py-4 text-lg font-bold text-white shadow-xl transition-all
-                    ${appState === AppState.TX_PENDING 
-                      ? 'cursor-not-allowed bg-slate-700 opacity-50' 
-                      : 'bg-gradient-to-r from-orange-500 to-red-600 hover:scale-105 hover:from-orange-400 hover:to-red-500 hover:shadow-orange-500/25'
-                    }`}
-                >
-                  {appState === AppState.TX_PENDING ? (
-                    <>
-                      <Loader2 className="h-6 w-6 animate-spin" />
-                      Processing...
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle2 className="h-6 w-6" />
-                      Daily Check-In
-                    </>
-                  )}
-                </button>
-
-                {txId && (
-                  <a 
-                    href={`https://explorer.hiro.so/txid/${txId}?chain=mainnet`} 
-                    target="_blank" 
-                    rel="noreferrer"
-                    className="text-sm text-orange-400 hover:underline"
-                  >
-                    View transaction in explorer
-                  </a>
-                )}
+            {activeTab === 'dashboard' ? (
+              <div className="grid gap-8 lg:grid-cols-3">
+                <div className="lg:col-span-2 space-y-8">
+                  <StatsCard stats={userStats} isLoading={appState === AppState.LOADING_DATA} />
+                  <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-8 shadow-xl backdrop-blur">
+                    <StreakProgressBar currentStreak={userStats?.currentStreak || 0} />
+                  </div>
+                </div>
+                <div className="lg:col-span-1">
+                  <Leaderboard data={[]} isLoading={false} />
+                </div>
               </div>
-            </div>
-
-            {/* Stats Grid */}
-            <StatsCard 
-              stats={userStats} 
-              isLoading={appState === AppState.LOADING_DATA} 
-            />
-            <section className="mt-8">
-              <DiaryForm />
-            </section>
-            {/* Leaderboard Section */}
-            <div className="pt-4">
-              <Leaderboard 
-                data={leaderboard}
-                isLoading={appState === AppState.LOADING_DATA}
+            ) : (
+              <StoryMode 
+                story={globalStory} 
+                onMint={handleMintStoryPart} 
+                isProcessing={appState === AppState.TX_PENDING}
+                isConnected={!!address}
               />
-            </div>
-
+            )}
           </div>
         )}
       </main>
-      
-      {/* Footer */}
-      <footer className="mt-20 border-t border-slate-800 py-8 text-center text-sm text-slate-500">
-        <p>&copy; {new Date().getFullYear()} StreakProtocol. Built on Stacks.</p>
-      </footer>
+
+      {txId && (
+        <div className="fixed bottom-8 right-8 z-50">
+          <a 
+            href={`https://explorer.hiro.so/txid/${txId}?chain=mainnet`}
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center gap-3 rounded-full bg-slate-950 border border-orange-500/50 px-6 py-4 text-sm font-bold text-orange-400 shadow-2xl hover:bg-slate-900 transition-all border-b-4 active:border-b-0 active:translate-y-1"
+          >
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Blockchain Syncing...
+          </a>
+        </div>
+      )}
     </div>
   );
 };
