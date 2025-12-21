@@ -1,10 +1,9 @@
 
 import { userSession, CONTRACT_ADDRESS, STREAK_CONTRACT, DIARY_CONTRACT } from '../constants';
-// Fix: Use STACKS_MAINNET as suggested by the compiler for this environment.
+
 import { StacksMainnet } from '@stacks/network';
 import { 
-  // Fix: Use fetchCallReadOnlyFunction instead of callReadOnlyFunction.
-  fetchCallReadOnlyFunction, 
+  callReadOnlyFunction, 
   standardPrincipalCV, 
   ClarityType,
   PostConditionMode,
@@ -19,7 +18,7 @@ const getNetwork = () => StacksMainnet;
 export const fetchUserStats = async (address: string): Promise<UserStats | null> => {
   const network = getNetwork();
   try {
-    const result = await fetchCallReadOnlyFunction({
+    const result = await callReadOnlyFunction({
       contractAddress: CONTRACT_ADDRESS,
       contractName: STREAK_CONTRACT,
       functionName: 'get-user',
