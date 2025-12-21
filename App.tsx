@@ -95,6 +95,31 @@ const App: React.FC = () => {
     }
   };
 
+  // Màn hình chọn API Key để tránh lỗi crash trình duyệt
+  if (needsApiKey) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-[#0f172a] p-4 text-center">
+        <div className="mb-6 rounded-2xl bg-blue-500/10 p-6 ring-1 ring-blue-500/20">
+          <Key className="h-12 w-12 text-blue-400" />
+        </div>
+        <h2 className="mb-2 text-3xl font-bold text-white">AI Setup Required</h2>
+        <p className="mb-8 max-w-md text-slate-400">
+          To enable collaborative storytelling, you need to select a Gemini API Key. 
+          Please use a paid GCP project as per the environment requirements.
+        </p>
+        <button
+          onClick={handleOpenKeySelector}
+          className="rounded-xl bg-blue-600 px-8 py-3 font-bold text-white shadow-lg shadow-blue-500/20 hover:bg-blue-500 transition-all active:scale-95"
+        >
+          Select Gemini API Key
+        </button>
+        <p className="mt-4 text-xs text-slate-500">
+          Refer to <a href="https://ai.google.dev/gemini-api/docs/billing" target="_blank" className="underline">billing documentation</a> for details.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#0f172a] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] text-slate-200 pb-12">
       <Header address={address} onDisconnect={handleDisconnect} />
