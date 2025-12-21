@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Header } from './components/Header';
 import { StatsCard } from './components/StatsCard';
 import { Leaderboard } from './components/Leaderboard';
-import StreakProgressBar from './components/StreakProgressBar'; // Import component mới
+import StreakProgressBar from './components/StreakProgressBar';
 import { userSession, LEADERBOARD_CANDIDATES } from './constants';
 import { 
   fetchUserStats, 
@@ -45,7 +45,7 @@ const App: React.FC = () => {
     setAppState(AppState.LOADING_DATA);
     
     try {
-      // Fetch tất cả dữ liệu song song
+      
       const [stats, balance, lbData] = await Promise.all([
         fetchUserStats(addr),
         fetchNftBalance(addr),
@@ -82,11 +82,11 @@ const App: React.FC = () => {
         (data) => {
           setTxId(data.txId);
           setAppState(AppState.READY);
-          // Reload dữ liệu sau 5s để cập nhật UI (Optimistic update)
+        
           setTimeout(() => loadData(address), 5000); 
         },
         () => {
-          setAppState(AppState.READY); // User hủy giao dịch
+          setAppState(AppState.READY); 
         }
       );
     } catch (e) {
@@ -164,7 +164,7 @@ const App: React.FC = () => {
 
                 {txId && (
                   <a 
-                    href={`https://explorer.hiro.so/txid/${txId}?chain=testnet`} 
+                    href={`https://explorer.hiro.so/txid/${txId}?chain=mainnet`} 
                     target="_blank" 
                     rel="noreferrer"
                     className="text-sm text-orange-400 hover:underline"
