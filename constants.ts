@@ -12,6 +12,11 @@ export const NETWORK = 'mainnet';
 // NFT Configuration
 export const MINT_FUNCTION = 'claim-streak-nft'; 
 
+// Diary Configuration
+export const diaryContractAddress = "SPHMWZQ1KW03KHYPADC81Q6XXS284S7QCHRAS3A8";
+export const diaryContractName = "diary-v1"; // thay tên contract bạn đã deploy
+
+
 // UI Constants
 export const APP_NAME = "StreakProtocol";
 export const EXPLORER_BASE_URL = "https://explorer.hiro.so";

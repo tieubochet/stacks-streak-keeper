@@ -3,6 +3,7 @@ import { Header } from './components/Header';
 import { StatsCard } from './components/StatsCard';
 import { Leaderboard } from './components/Leaderboard';
 import StreakProgressBar from './components/StreakProgressBar';
+import { DiaryForm } from "./components/DiaryForm";
 import { userSession, LEADERBOARD_CANDIDATES } from './constants';
 import { 
   fetchUserStats, 
@@ -180,7 +181,9 @@ const App: React.FC = () => {
               stats={userStats} 
               isLoading={appState === AppState.LOADING_DATA} 
             />
-
+            <section className="mt-8">
+              <DiaryForm />
+            </section>
             {/* Leaderboard Section */}
             <div className="pt-4">
               <Leaderboard 
