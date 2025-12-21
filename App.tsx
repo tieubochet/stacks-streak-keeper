@@ -95,27 +95,31 @@ const App: React.FC = () => {
     }
   };
 
-  // Màn hình chọn API Key để tránh lỗi crash trình duyệt
+// Onboarding screen if API Key is missing
   if (needsApiKey) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-[#0f172a] p-4 text-center">
-        <div className="mb-6 rounded-2xl bg-blue-500/10 p-6 ring-1 ring-blue-500/20">
-          <Key className="h-12 w-12 text-blue-400" />
+      <div className="flex min-h-screen flex-col items-center justify-center bg-[#0f172a] p-6 text-center text-slate-200">
+        <div className="mb-8 rounded-3xl bg-blue-500/10 p-8 ring-1 ring-blue-500/20 shadow-2xl shadow-blue-500/10 animate-pulse">
+          <Key className="h-16 w-16 text-blue-400" />
         </div>
-        <h2 className="mb-2 text-3xl font-bold text-white">AI Setup Required</h2>
-        <p className="mb-8 max-w-md text-slate-400">
-          To enable collaborative storytelling, you need to select a Gemini API Key. 
-          Please use a paid GCP project as per the environment requirements.
+        <h2 className="mb-4 text-4xl font-bold text-white tracking-tight">AI Activation Required</h2>
+        <p className="mb-10 max-w-md text-lg text-slate-400 leading-relaxed">
+          StreakProtocol uses Gemini AI to power collaborative storytelling. 
+          Please select a Gemini API Key from a paid GCP project to continue.
         </p>
         <button
           onClick={handleOpenKeySelector}
-          className="rounded-xl bg-blue-600 px-8 py-3 font-bold text-white shadow-lg shadow-blue-500/20 hover:bg-blue-500 transition-all active:scale-95"
+          className="group relative flex items-center gap-3 rounded-2xl bg-blue-600 px-10 py-4 font-bold text-white shadow-xl shadow-blue-500/30 hover:bg-blue-500 hover:scale-105 transition-all active:scale-95"
         >
+          <Zap className="h-5 w-5 text-blue-200" />
           Select Gemini API Key
         </button>
-        <p className="mt-4 text-xs text-slate-500">
-          Refer to <a href="https://ai.google.dev/gemini-api/docs/billing" target="_blank" className="underline">billing documentation</a> for details.
-        </p>
+        <div className="mt-8 flex flex-col gap-2">
+          <a href="https://ai.google.dev/gemini-api/docs/billing" target="_blank" rel="noreferrer" className="text-sm text-blue-400 hover:underline">
+            View Billing Documentation
+          </a>
+          <p className="text-xs text-slate-600">Secure connection powered by Google GenAI</p>
+        </div>
       </div>
     );
   }

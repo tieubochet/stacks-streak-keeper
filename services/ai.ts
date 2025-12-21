@@ -2,15 +2,15 @@
 import { GoogleGenAI } from "@google/genai";
 
 export const generateStoryFromWord = async (word: string, currentStory: string, genre: string = "general") => {
+  // Khởi tạo instance ngay trước khi gọi API để tránh stale API key
   const apiKey = process.env.API_KEY;
   
   if (!apiKey) {
-    console.error("Gemini API Key is missing. Please ensure it's selected via the UI.");
-    return `In a world without magic, the ${word} was still a mystery. (AI Error: Missing API Key)`;
+    console.error("Gemini API Key is missing.");
+    return `The story paused as the world waited for a key. (AI Error: Missing API Key)`;
   }
 
   try {
-    // Khởi tạo SDK chỉ khi chắc chắn có API Key
     const ai = new GoogleGenAI({ apiKey });
     
     const prompt = `
