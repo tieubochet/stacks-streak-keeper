@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Type, Send, Users, Sparkles, Loader2, BookOpen } from 'lucide-react';
-import { generateStoryFromWord } from '../services/ai';
+import { generateStory } from '../services/ai';
 import { GlobalStory } from '../types';
 
 interface StoryModeProps {
@@ -20,7 +20,7 @@ export const StoryMode: React.FC<StoryModeProps> = ({ story, onMint, isProcessin
   const handleAddWord = async () => {
     if (!word.trim()) return;
     setIsAiGenerating(true);
-    const newPart = await generateStoryFromWord(word, story.fullContent, genre);
+    const newPart = await generateStory(currentStreak);
     setDraftPart(newPart);
     setIsAiGenerating(false);
   };

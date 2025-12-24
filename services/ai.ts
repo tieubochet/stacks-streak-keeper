@@ -1,59 +1,57 @@
+import Groq from "groq-sdk";
 
-import { GoogleGenAI } from "@google/genai";
+// Khởi tạo Groq Client
+// Lưu ý: dangerouslyAllowBrowser: true là bắt buộc khi chạy trên Vite (Client-side)
+const groq = new Groq({
+  apiKey: import.meta.env.VITE_GROQ_API_KEY,
+  dangerouslyAllowBrowser: true 
+});
 
-// Hàm hỗ trợ delay cho cơ chế retry
-const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+/**
+ * Hàm tạo nội dung story dựa trên số ngày streak
+ * @param streakCount Số ngày user đã duy trì
+ * @param prompt (Tùy chọn) Prompt tùy chỉnh từ context
+ */
+export const generateStory = async (streakCount: number, customPrompt?: string) => {
+  try {
+    const systemPrompt = `You are a creative fantasy narrator for a habit-tracking RPG game. 
+    The user has maintained a streak of ${streakCount} days. 
+    Write a VERY SHORT (max 2 sentences), epic, encouraging update about their hero's journey based on this streak.
+    Style: Adventure, RPG, Epic.`;
 
-export const generateStoryFromWord = async (
-  word: string, 
-  currentStory: string, 
-  genre: string = "general",
-  retries: number = 3
-): Promise<string> => {
-  const apiKey = process.env.API_KEY;
-  
-  if (!apiKey) {
-    return `The story paused. (Error: Missing API Key)`;
+    const completion = await groq.chat.completions.create({
+      messages: [
+        {
+          role: "system",
+          content: systemPrompt
+        },
+        {
+          role: "user",
+          content: customPrompt || `Describe the event for day ${streakCount}.`
+        }
+      ],
+      model: "llama-3.1-8b-instant", // Model mạnh và nhanh nhất hiện tại trên Groq
+      temperature: 0.7,
+      max_tokens: 100, // Giữ câu trả lời ngắn gọn
+    });
+
+    return completion.choices[0]?.message?.content || "Your legend continues to grow...";
+  } catch (error) {
+    console.error("Error generating story with Groq:", error);
+    return "The ancient scrolls are silent today. (Connection Error)";
   }
-
-  const prompt = `
-    Task: Continue a collaborative story.
-    Genre: ${genre}
-    New Word to include: "${word}"
-    Existing Story: "${currentStory || "The journey began."}"
-    
-    Instruction: Write the NEXT SHORT PART of the story (max 2 sentences) that naturally incorporates the word "${word}". 
-    The tone should match the genre "${genre}". 
-    Return only the new text segment, nothing else.
-  `;
-
-  for (let i = 0; i < retries; i++) {
-    try {
-      const ai = new GoogleGenAI({ apiKey });
-      const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview', // Tối ưu nhất cho quota và tốc độ
-        contents: prompt,
-      });
-      
-      return response.text?.trim() || `And then, the ${word} changed everything.`;
-    } catch (error: any) {
-      const isRateLimit = error?.message?.includes('429') || error?.status === 429;
-      
-      if (isRateLimit && i < retries - 1) {
-        // Exponential backoff: 2s, 4s, 8s...
-        const waitTime = Math.pow(2, i + 1) * 1000;
-        console.warn(`Rate limit hit. Retrying in ${waitTime}ms...`);
-        await sleep(waitTime);
-        continue;
-      }
-      
-      console.error("Gemini API Error:", error);
-      if (isRateLimit) {
-        return `[Limit Hit] The ${word} appeared, but the narrator needed a moment to breathe.`;
-      }
-      break;
-    }
-  }
-
-  return `Suddenly, a ${word} appeared on the horizon.`;
 };
+
+// Hàm wrapper tổng quát nếu bạn dùng ở chỗ khác
+export const getAIResponse = async (prompt: string) => {
+    try {
+        const completion = await groq.chat.completions.create({
+            messages: [{ role: "user", content: prompt }],
+            model: "llama-3.1-8b-instant",
+        });
+        return completion.choices[0]?.message?.content;
+    } catch (e) {
+        console.error(e);
+        return null;
+    }
+}
