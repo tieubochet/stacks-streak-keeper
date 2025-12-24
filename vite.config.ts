@@ -6,29 +6,34 @@ export default defineConfig({
   plugins: [
     react(),
     nodePolyfills({
-      protocolImports: true, // Cho phép import 'node:...'
+      // Bật polyfill cho các module nodejs core
       globals: {
         Buffer: true,
         global: true,
         process: true,
       },
+      protocolImports: true,
     }),
   ],
   resolve: {
     alias: {
-      // Ép buộc dùng bản browser cho các thư viện Node
+      // Ép buộc chuyển hướng module Node sang Browser
       'ws': 'isomorphic-ws', 
       'stream': 'stream-browserify',
       'util': 'util',
+      'process': 'process/browser',
+      'buffer': 'buffer',
     },
   },
   define: {
-    // Định nghĩa biến toàn cục để tránh lỗi runtime
-    'global': 'window',
+    // Định nghĩa lại global và process.env để tránh crash
+    'global': 'globalThis',
     'process.env': {}, 
   },
   build: {
-    // Tăng giới hạn cảnh báo chunk size (không ảnh hưởng lỗi, chỉ cho sạch log)
-    chunkSizeWarningLimit: 1600,
-  }
+    // Tùy chọn này giúp debug lỗi build nếu có
+    commonjsOptions: {
+      transformMixedEsModules: true,
+    },
+  },
 })
