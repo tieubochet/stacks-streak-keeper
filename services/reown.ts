@@ -2,7 +2,7 @@ import { UniversalConnector } from '@reown/appkit-universal-connector';
 
 
 const projectId = import.meta.env.VITE_REOWN_PROJECT_ID;
-
+console.log("Reown Project ID:", projectId);
 
 if (!projectId) {
   throw new Error('VITE_REOWN_PROJECT_ID is not set');
