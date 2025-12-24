@@ -6,26 +6,36 @@ export default defineConfig({
   plugins: [
     react(),
     nodePolyfills({
-      // Bắt buộc: Cho phép import kiểu 'node:events', 'node:util'
-      protocolImports: true,
-      // Bật toàn bộ polyfill
+      include: ['buffer', 'process', 'util', 'stream', 'events', 'string_decoder', 'http', 'https', 'url', 'zlib', 'punycode'],
       globals: {
         Buffer: true,
         global: true,
         process: true,
       },
+      protocolImports: true,
     }),
   ],
   resolve: {
     alias: {
-      // Đảm bảo các module core của Node được map đúng
-      events: 'events',
+      process: 'process/browser',
+      stream: 'stream-browserify',
+      zlib: 'browserify-zlib',
       util: 'util',
+      buffer: 'buffer',
     },
   },
-  // Định nghĩa cứng biến global để tránh lỗi runtime
   define: {
-    'global': 'window',
-    'process.env': {}, 
+    'global': 'globalThis', // Quan trọng: thay đổi từ 'window' sang 'globalThis'
+  },
+  build: {
+    rollupOptions: {
+      plugins: [
+        // Ép buộc Rollup đưa các polyfill này vào bundle
+        nodePolyfills(), 
+      ],
+    },
+    commonjsOptions: {
+      transformMixedEsModules: true, // Quan trọng cho các thư viện CJS/ESM lẫn lộn
+    },
   },
 })
