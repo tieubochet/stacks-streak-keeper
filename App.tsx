@@ -1,4 +1,4 @@
-// App.tsx
+
 import React, { useEffect, useState, useCallback } from 'react';
 import { Header } from './components/Header';
 import { StatsCard } from './components/StatsCard';
@@ -16,16 +16,6 @@ import {
 import { UserStats, AppState, ActiveTab, GlobalStory } from './types';
 import { CheckCircle2, Loader2, Zap, LayoutDashboard, PenTool, Key, RefreshCw } from 'lucide-react';
 
-// Define window interface for AI Studio if needed
-declare global {
-  interface Window {
-    aistudio?: {
-      hasSelectedApiKey: () => Promise<boolean>;
-      openSelectKey: () => Promise<void>;
-    };
-  }
-}
-
 const App: React.FC = () => {
   const [address, setAddress] = useState<string | null>(null);
   const [userStats, setUserStats] = useState<UserStats | null>(null);
@@ -37,7 +27,6 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const init = async () => {
-      // Logic kiểm tra key của Google AI Studio (Giữ nguyên theo code bạn gửi)
       if (window.aistudio) {
         try {
           const hasKey = await window.aistudio.hasSelectedApiKey();
@@ -72,7 +61,6 @@ const App: React.FC = () => {
       setUserStats(stats);
       setAppState(AppState.READY);
     } catch (error) {
-      console.error(error);
       setAppState(AppState.READY);
     }
   }, []);
@@ -117,7 +105,6 @@ const App: React.FC = () => {
         () => setAppState(AppState.READY)
       );
     } catch (e) {
-      console.error(e);
       setAppState(AppState.READY);
     }
   };
@@ -132,7 +119,6 @@ const App: React.FC = () => {
         setTimeout(loadStory, 8000);
       });
     } catch (e) {
-      console.error(e);
       setAppState(AppState.READY);
     }
   };
@@ -145,22 +131,28 @@ const App: React.FC = () => {
         </div>
         <h2 className="mb-4 text-4xl font-bold text-white tracking-tight">AI Activation Required</h2>
         <p className="mb-10 max-w-md text-lg text-slate-400 leading-relaxed">
-          StreakProtocol uses AI services. Please verify your API Key configuration.
+          StreakProtocol uses Gemini AI. If you're experiencing "Rate Limit" issues, 
+          please switch to a different API Key from a paid GCP project.
         </p>
         <button
           onClick={handleOpenKeySelector}
           className="group relative flex items-center gap-3 rounded-2xl bg-blue-600 px-10 py-4 font-bold text-white shadow-xl shadow-blue-500/30 hover:bg-blue-500 hover:scale-105 transition-all active:scale-95"
         >
           <Zap className="h-5 w-5 text-blue-200" />
-          Configure API Key
+          Select/Change Gemini API Key
         </button>
+        <div className="mt-8 flex flex-col gap-2">
+          <a href="https://ai.google.dev/gemini-api/docs/billing" target="_blank" rel="noreferrer" className="text-sm text-blue-400 hover:underline">
+            View Billing Documentation
+          </a>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-[#0f172a] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] text-slate-200 pb-12">
-      <Header />
+      <Header address={address} onDisconnect={handleDisconnect} />
 
       <main className="container mx-auto max-w-5xl px-4 py-8">
         {!address && activeTab !== 'story' ? (
@@ -206,11 +198,11 @@ const App: React.FC = () => {
               </div>
               
               <div className="flex items-center gap-3">
-                {activeTab === 'story' && window.aistudio && (
+                {activeTab === 'story' && (
                   <button
                     onClick={handleOpenKeySelector}
                     className="flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-800/50 px-4 py-2 text-xs font-medium text-slate-400 hover:text-white transition-all"
-                    title="Switch API Key"
+                    title="Switch Gemini Project/Key"
                   >
                     <RefreshCw size={14} />
                     Switch AI Key
