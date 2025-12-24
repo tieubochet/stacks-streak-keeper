@@ -43,17 +43,6 @@
 }
 </script>
 <link rel="stylesheet" href="/index.css">
-<script>
-    // Hack: Khởi tạo global và Buffer thủ công cho trình duyệt
-    window.global = window;
-    window.process = { env: {} };
-  </script>
-  <script src="https://bundle.run/buffer@6.0.3"></script>
-  <script>
-    if (!window.Buffer) {
-      window.Buffer = window.buffer.Buffer;
-    }
-  </script>
 </head>
   <body>
     <div id="root"></div>

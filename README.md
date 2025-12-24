@@ -64,11 +64,20 @@ This demonstrates **event-driven architecture on Stacks**
 
 ---
 
+## 🛠 Tech Stack & Integration Notes
+
+- **Smart Contract:** Clarity (Stacks Mainnet) - Optimized for generating on-chain fees via Streak Check-ins and Badge Minting.
+- **Wallet Integration:** - Currently using **Leather/Xverse** (via `@stacks/connect`) for stable Mainnet interactions.
+- **WalletKit (Reown) SDK** is installed and configured (`@reown/appkit`) as part of the roadmap to support cross-chain EVM wallets in the next phase.
+
+---
+
 ## 🚀 Live Deployment
 
 - Frontend: Deployed and accessible
 - Smart contracts: Deployed on Stacks
 - Chainhooks: Actively running and processing events
+- WalletKit (Reown) SDK is installed and configured
 
 ---
 
@@ -78,5 +87,6 @@ This repository intentionally demonstrates:
 - ✅ Usage of `@stacks/connect` and `@stacks/transactions`
 - ✅ GitHub contributions during the challenge window
 - ✅ Real-time on-chain event handling via **Hiro Chainhooks**
+- ✅ WalletKit (Reown) SDK is installed and configured
 
 *Built with ❤️ for the Bitcoin & Stacks Ecosystem.*
