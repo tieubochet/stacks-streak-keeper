@@ -6,36 +6,29 @@ export default defineConfig({
   plugins: [
     react(),
     nodePolyfills({
-      include: ['buffer', 'process', 'util', 'stream', 'events', 'string_decoder', 'http', 'https', 'url', 'zlib', 'punycode'],
+      protocolImports: true, // Cho phép import 'node:...'
       globals: {
         Buffer: true,
         global: true,
         process: true,
       },
-      protocolImports: true,
     }),
   ],
   resolve: {
     alias: {
-      process: 'process/browser',
-      stream: 'stream-browserify',
-      zlib: 'browserify-zlib',
-      util: 'util',
-      buffer: 'buffer',
+      // Ép buộc dùng bản browser cho các thư viện Node
+      'ws': 'isomorphic-ws', 
+      'stream': 'stream-browserify',
+      'util': 'util',
     },
   },
   define: {
-    'global': 'globalThis', // Quan trọng: thay đổi từ 'window' sang 'globalThis'
+    // Định nghĩa biến toàn cục để tránh lỗi runtime
+    'global': 'window',
+    'process.env': {}, 
   },
   build: {
-    rollupOptions: {
-      plugins: [
-        // Ép buộc Rollup đưa các polyfill này vào bundle
-        nodePolyfills(), 
-      ],
-    },
-    commonjsOptions: {
-      transformMixedEsModules: true, // Quan trọng cho các thư viện CJS/ESM lẫn lộn
-    },
-  },
+    // Tăng giới hạn cảnh báo chunk size (không ảnh hưởng lỗi, chỉ cho sạch log)
+    chunkSizeWarningLimit: 1600,
+  }
 })

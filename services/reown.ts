@@ -5,11 +5,8 @@ let connectorInstance: UniversalConnector | null = null;
 // Chỉ khởi tạo khi cần dùng
 export const getConnector = () => {
   if (!connectorInstance) {
-    const projectId = import.meta.env.VITE_REOWN_PROJECT_ID;
-    if (!projectId) {
-        console.warn('WalletConnect disabled: missing projectId')
-        return
-    }
+    const projectId = 'b113be1d4d4bec533241f1af1982e154';
+    console.log("Initializing Reown with Project ID:", projectId);
     // Cấu hình Stacks
     const stacksMainnet = {
       id: 'stacks:1',
