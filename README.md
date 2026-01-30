@@ -88,7 +88,7 @@ The deployed contracts handle:
 
 ## 🔗 Live Deployment
 
-- **Frontend:** [Link to your Vercel App]
+- **Frontend:** [https://stacks-streak-keeper.vercel.app](https://stacks-streak-keeper.vercel.app)
 - **Smart Contracts:** Deployed on Stacks Mainnet
 - **Chainhooks:** Active
 
