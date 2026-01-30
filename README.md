@@ -1,6 +1,6 @@
 # 🟧 Stacks Streak Keeper
 
-A fully on-chain **daily streak tracking dApp** built on **Stacks**, showcasing smart contract activity, real user interactions, and real-time onchain event processing using **Hiro Chainhooks**.
+A fully on-chain **daily streak tracking dApp** built on **Stacks**, featuring a **DAO-governed AI Storytelling** mode. Connect your wallet, build your habits, and vote on the future of a never-ending community story.
 
 ---
 
@@ -8,33 +8,47 @@ A fully on-chain **daily streak tracking dApp** built on **Stacks**, showcasing 
 
 Stacks Streak Keeper allows users to:
 
-- 🔐 Connect their Stacks wallet (Hiro / Xverse)
-- ✅ Check in once per day (on-chain transaction)
-- 🔥 Maintain a daily streak stored in a Stacks smart contract
-- 🏆 Mint milestone NFTs based on streak achievements
-- 📊 View leaderboard and personal streak stats
-- 🔔 React to on-chain events in real time using **Hiro Chainhooks**
+- 🔐 **Connect Wallet:** Login with Stacks wallet (Leather / Xverse).
+- ✅ **Daily Check-in:** Record daily habits via on-chain transactions.
+- 🔥 **Streak Tracking:** Maintain a daily streak stored securely in a Stacks smart contract.
+- 🗳️ **Story DAO (NEW):** Use **AI (Gemini)** to generate plot twists, submit proposals, and **vote** on the story's next chapter on-chain.
+- 🏆 **Dynamic Rewards:** Mint milestone NFTs based on your streak achievements.
+- 📊 **Leaderboard:** View real-time rankings of the most consistent users.
 
-All streak data and rewards are **verifiable on-chain**.
+All streak data, story proposals, and votes are **verifiable on-chain**.
 
 ---
 
 ## 🛠️ Tech Stack
 
-### Blockchain
-- **Stacks blockchain**
-- **Clarity smart contracts**
-- SIP-009 NFTs (milestone rewards)
+### Blockchain & Smart Contracts
+- **Stacks Blockchain** (Mainnet)
+- **Clarity:**
+  - `teeboo-streak`: Manages check-ins and streaks.
+  - `story-dao`: Handles story proposals and voting mechanisms.
+  - `SIP-009`: Standard for milestone NFT rewards.
 
 ### Frontend
-- React + TypeScript
-- `@stacks/connect`
-- `@stacks/transactions`
+- **Framework:** React + TypeScript + Vite
+- **Styling:** Tailwind CSS + Lucide React
+- **Stacks.js:** `@stacks/connect`, `@stacks/transactions`
+- **Wallet Support:** Leather, Xverse
 
-### Backend / Infra
-- **Hiro Chainhooks** (Week 2 challenge focus)
-- Serverless endpoints (Vercel)
-- Telegram notification bot (on-chain event driven)
+### AI & Backend
+- **AI Integration:** Google Gemini / Groq (via SDK) for generating story proposals.
+- **Hiro Chainhooks:** Real-time event listening for check-ins.
+- **Vercel:** Serverless deployment.
+
+---
+
+## 📖 Feature Spotlight: Story DAO
+
+The **Story Mode** has been upgraded to a decentralized voting system:
+
+1.  **Propose:** Users use AI to generate a creative, short plot twist (max 256 chars).
+2.  **Submit:** The proposal is submitted to the `story-dao` smart contract.
+3.  **Vote:** The community votes on their favorite proposals using STX transactions.
+4.  **Evolve:** The winning proposal becomes a permanent part of the global story history.
 
 ---
 
@@ -42,51 +56,40 @@ All streak data and rewards are **verifiable on-chain**.
 
 The deployed contracts handle:
 
-- Daily check-in transactions
-- Streak state tracking (current / longest streak)
-- NFT minting on milestone completion
-
-These contracts generate **real user transactions and on-chain events**, which are consumed by Chainhooks.
-
----
-
-## 🔗 Hiro Chainhooks 
-
-This project uses **Hiro Chainhooks** to listen to on-chain Stacks events in real time.
-
-Chainhooks are configured to:
-
-- Detect successful `check-in` contract calls
-- React immediately to streak updates
-- Trigger off-chain actions (notifications, indexing, analytics)
-
-This demonstrates **event-driven architecture on Stacks**
+- `check-in`: Updates user streak state.
+- `submit-proposal`: Records a new story segment suggestion.
+- `vote-proposal`: Records votes for a specific story segment.
+- `mint-badge`: Issues NFT rewards.
 
 ---
 
-## 🛠 Tech Stack & Integration Notes
+## 🚀 Getting Started
 
-- **Smart Contract:** Clarity (Stacks Mainnet) - Optimized for generating on-chain fees via Streak Check-ins and Badge Minting.
-- **Wallet Integration:** - Currently using **Leather/Xverse** (via `@stacks/connect`) for stable Mainnet interactions.
-- **WalletKit (Reown) SDK** is installed and configured (`@reown/appkit`) as part of the roadmap to support cross-chain EVM wallets in the next phase.
+1.  **Clone the repository**
+    ```bash
+    git clone https://github.com/your-username/stacks-streak-keeper.git
+    cd stacks-streak-keeper
+    ```
+
+2.  **Install dependencies**
+    ```bash
+    npm install
+    ```
+
+3.  **Configure Environment**
+    Create a `.env` file and add your API keys (Groq/Gemini) if running local AI features.
+
+4.  **Run the development server**
+    ```bash
+    npm run dev
+    ```
 
 ---
 
-## 🚀 Live Deployment
+## 🔗 Live Deployment
 
-- Frontend: Deployed and accessible
-- Smart contracts: Deployed on Stacks
-- Chainhooks: Actively running and processing events
-- WalletKit (Reown) SDK is installed and configured
-
----
-
-This repository intentionally demonstrates:
-
-- ✅ Active Stacks smart contracts
-- ✅ Usage of `@stacks/connect` and `@stacks/transactions`
-- ✅ GitHub contributions during the challenge window
-- ✅ Real-time on-chain event handling via **Hiro Chainhooks**
-- ✅ WalletKit (Reown) SDK is installed and configured
+- **Frontend:** [Link to your Vercel App]
+- **Smart Contracts:** Deployed on Stacks Mainnet
+- **Chainhooks:** Active
 
 *Built with ❤️ for the Bitcoin & Stacks Ecosystem.*
