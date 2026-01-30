@@ -67,7 +67,7 @@ The deployed contracts handle:
 
 1.  **Clone the repository**
     ```bash
-    git clone https://github.com/your-username/stacks-streak-keeper.git
+    git clone https://github.com/tieubochet/stacks-streak-keeper.git
     cd stacks-streak-keeper
     ```
 
