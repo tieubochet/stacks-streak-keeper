@@ -74,6 +74,7 @@ export const StoryMode: React.FC<StoryModeProps> = ({ story, isConnected, isProc
                 value={aiDraft}
                 onChange={(e) => setAiDraft(e.target.value)}
                 disabled={isProcessing}
+                maxLength={250}
               />
               <div className="flex gap-3">
                  <button 

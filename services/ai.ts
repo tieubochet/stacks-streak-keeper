@@ -15,9 +15,7 @@ const groq = new Groq({
 export const generateStory = async (streakCount: number, customPrompt?: string) => {
   try {
     const systemPrompt = `You are a creative fantasy narrator for a habit-tracking RPG game. 
-    The user has maintained a streak of ${streakCount} days. 
-    Write a VERY SHORT (max 2 sentences), epic, encouraging update about their hero's journey based on this streak.
-    Style: Adventure, RPG, Epic.`;
+    Write a VERY SHORT (max 1 sentence, under 200 characters), epic update.`;
 
     const completion = await groq.chat.completions.create({
       messages: [
@@ -32,10 +30,14 @@ export const generateStory = async (streakCount: number, customPrompt?: string) 
       ],
       model: "llama-3.1-8b-instant", // Model mạnh và nhanh nhất hiện tại trên Groq
       temperature: 0.7,
-      max_tokens: 100, // Giữ câu trả lời ngắn gọn
+      max_tokens: 60, // Giữ câu trả lời ngắn gọn
     });
 
-    return completion.choices[0]?.message?.content || "Your legend continues to grow...";
+    let content = completion.choices[0]?.message?.content || "";
+    if (content.length > 250) {
+        content = content.substring(0, 247) + "...";
+    }
+    return content;
   } catch (error) {
     console.error("Error generating story with Groq:", error);
     return "The ancient scrolls are silent today. (Connection Error)";
