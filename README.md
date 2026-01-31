@@ -1,6 +1,6 @@
 # 🟧 Stacks Streak Keeper
 
-A fully on-chain **daily streak tracking dApp** built on **Stacks**, featuring a **DAO-governed AI Storytelling** mode. Connect your wallet, build your habits, and vote on the future of a never-ending community story.
+A fully on-chain **daily streak tracking dApp** built on **Stacks**, featuring a **DAO-governed AI Storytelling** mode and **GitHub-style Contribution Heatmap**. Connect your wallet, build your habits, and vote on the future of a never-ending community story.
 
 ---
 
@@ -8,12 +8,13 @@ A fully on-chain **daily streak tracking dApp** built on **Stacks**, featuring a
 
 Stacks Streak Keeper allows users to:
 
-- 🔐 **Connect Wallet:** Login with Stacks wallet (Leather / Xverse).
+- 🔐 **Connect Wallet:** Login securely with Stacks wallets (Leather / Xverse).
 - ✅ **Daily Check-in:** Record daily habits via on-chain transactions.
 - 🔥 **Streak Tracking:** Maintain a daily streak stored securely in a Stacks smart contract.
-- 🗳️ **Story DAO (NEW):** Use **AI (Gemini)** to generate plot twists, submit proposals, and **vote** on the story's next chapter on-chain.
+- 📅 **Activity Heatmap (NEW):** Visualize your consistency with a GitHub-style contribution graph.
+- 🗳️ **Story DAO:** Use **AI (Gemini)** to generate plot twists, submit proposals, and **vote** on the story's next chapter on-chain.
 - 🏆 **Dynamic Rewards:** Mint milestone NFTs based on your streak achievements.
-- 📊 **Leaderboard:** View real-time rankings of the most consistent users.
+- 📊 **Live Leaderboard:** View real-time rankings including current and max streaks of top users.
 
 All streak data, story proposals, and votes are **verifiable on-chain**.
 
@@ -31,6 +32,7 @@ All streak data, story proposals, and votes are **verifiable on-chain**.
 ### Frontend
 - **Framework:** React + TypeScript + Vite
 - **Styling:** Tailwind CSS + Lucide React
+- **Visualization:** `react-calendar-heatmap` (Contribution Graph)
 - **Stacks.js:** `@stacks/connect`, `@stacks/transactions`
 - **Wallet Support:** Leather, Xverse
 
@@ -45,7 +47,7 @@ All streak data, story proposals, and votes are **verifiable on-chain**.
 
 The **Story Mode** has been upgraded to a decentralized voting system:
 
-1.  **Propose:** Users use AI to generate a creative, short plot twist (max 256 chars).
+1.  **Propose:** Users use AI to generate a creative, short plot twist (max 250 chars).
 2.  **Submit:** The proposal is submitted to the `story-dao` smart contract.
 3.  **Vote:** The community votes on their favorite proposals using STX transactions.
 4.  **Evolve:** The winning proposal becomes a permanent part of the global story history.
