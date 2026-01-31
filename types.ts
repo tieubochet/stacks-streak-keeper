@@ -28,6 +28,7 @@ export interface LeaderboardEntry {
   rank: number;
   address: string;
   streak: number;
+  maxStreak: number;
   total: number;
   isCurrentUser: boolean;
 }

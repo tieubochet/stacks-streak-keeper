@@ -174,7 +174,7 @@ const App: React.FC = () => {
     <div className="min-h-screen bg-[#0f172a] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] text-slate-200 pb-12">
       <Header address={address} onDisconnect={handleDisconnect} />
 
-      <main className="container mx-auto max-w-7xl px-4 py-8">
+      <main className="container mx-auto max-w-9xl px-4 py-8">
         {!address && activeTab !== 'story' ? (
           <div className="flex min-h-[65vh] flex-col items-center justify-center text-center animate-in fade-in duration-1000">
             <div className="mb-8 rounded-full bg-orange-500/10 p-8 ring-1 ring-orange-500/20 shadow-2xl shadow-orange-500/10">
@@ -244,22 +244,35 @@ const App: React.FC = () => {
 
             <div className="transition-all duration-500">
               {activeTab === 'dashboard' ? (
-                <div className="grid gap-8 lg:grid-cols-3 animate-in slide-in-from-left-4">
-                  <div className="lg:col-span-2 space-y-8">
-                    <StatsCard stats={userStats} isLoading={appState === AppState.LOADING_DATA} />
-                    <ActivityHeatmap 
-                        checkIns={userStats ? generateMockHistory(userStats.currentStreak) : []} 
-                    />
-                    <div className="rounded-3xl border border-slate-800 bg-slate-900/40 p-10 shadow-2xl backdrop-blur-md">
-                      <h3 className="mb-6 text-xl font-bold text-white">Your Progress</h3>
-                      <StreakProgressBar currentStreak={userStats?.currentStreak || 0} />
-                    </div>
-                  </div>
-                  <div className="lg:col-span-1">
-                    <Leaderboard data={leaderboardData} isLoading={appState === AppState.LOADING_DATA} />
-                  </div>
-                </div>
-              ) : (
+  <div className="space-y-8 animate-in slide-in-from-left-4">
+    
+
+    <div className="flex flex-col gap-8">
+      <StatsCard stats={userStats} isLoading={appState === AppState.LOADING_DATA} />
+      
+   
+      <ActivityHeatmap checkIns={userStats ? generateMockHistory(userStats.currentStreak) : []} />
+    </div>
+
+
+    <div className="grid gap-8 lg:grid-cols-3">
+      
+
+      <div className="lg:col-span-2">
+         <Leaderboard data={leaderboardData} isLoading={appState === AppState.LOADING_DATA} />
+      </div>
+
+   
+      <div className="lg:col-span-1">
+        <div className="sticky top-24 rounded-3xl border border-slate-800 bg-slate-900/40 p-8 shadow-2xl backdrop-blur-md">
+          <h3 className="mb-6 text-xl font-bold text-white">Your Progress</h3>
+          <StreakProgressBar currentStreak={userStats?.currentStreak || 0} />
+        </div>
+      </div>
+    </div>
+
+  </div>
+) : (
                 <div className="animate-in slide-in-from-right-4">
                   <StoryMode 
                     story={globalStory} 

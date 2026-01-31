@@ -34,6 +34,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ data, isLoading }) => 
               <th className="px-6 py-4">Rank</th>
               <th className="px-6 py-4">User</th>
               <th className="px-6 py-4 text-right">Streak</th>
+              <th className="px-6 py-4 text-right">Max Streak</th>
               <th className="px-6 py-4 text-right">Total Check-ins</th>
             </tr>
           </thead>
@@ -66,6 +67,9 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ data, isLoading }) => 
                       <Flame className="h-3 w-3 text-orange-500 fill-orange-500" />
                    </div>
                 </td>
+                <td className="px-6 py-4 text-right text-slate-400">
+    <span className="font-mono text-yellow-500">{entry.maxStreak}</span>
+</td>
                 <td className="px-6 py-4 text-right text-slate-400">{entry.total}</td>
               </tr>
             ))}

@@ -130,6 +130,7 @@ export const fetchLeaderboardData = async (
         rank: 0, 
         address: addr,
         streak: stats.currentStreak,
+        maxStreak: stats.maxStreak,
         total: stats.totalCheckins,
         isCurrentUser: addr === currentUserAddress
       });
