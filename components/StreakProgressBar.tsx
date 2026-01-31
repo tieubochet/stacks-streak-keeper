@@ -15,7 +15,7 @@ const StreakProgressBar: React.FC<StreakProps> = ({ currentStreak }) => {
   const isCompleted = currentStreak >= TARGET;
 
   return (
-    <div style={{ padding: '20px', maxWidth: '400px', margin: '0 auto' }}>
+    <div style={{ padding: '20px', maxWidth: '100%', margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
         <span style={{ fontWeight: 'bold' }}>Current Streak</span>
         <span style={{ color: isCompleted ? '#10B981' : '#6366F1' }}>

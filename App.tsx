@@ -174,7 +174,7 @@ const App: React.FC = () => {
     <div className="min-h-screen bg-[#0f172a] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] text-slate-200 pb-12">
       <Header address={address} onDisconnect={handleDisconnect} />
 
-      <main className="container mx-auto max-w-5xl px-4 py-8">
+      <main className="container mx-auto max-w-7xl px-4 py-8">
         {!address && activeTab !== 'story' ? (
           <div className="flex min-h-[65vh] flex-col items-center justify-center text-center animate-in fade-in duration-1000">
             <div className="mb-8 rounded-full bg-orange-500/10 p-8 ring-1 ring-orange-500/20 shadow-2xl shadow-orange-500/10">
