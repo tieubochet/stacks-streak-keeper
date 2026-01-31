@@ -15,6 +15,7 @@ import {
 } from './services/stacks';
 import { UserStats, AppState, ActiveTab, GlobalStory } from './types';
 import { CheckCircle2, Loader2, Zap, LayoutDashboard, PenTool, Key, RefreshCw } from 'lucide-react';
+import { ActivityHeatmap } from './components/ActivityHeatmap';
 
 const App: React.FC = () => {
   const [address, setAddress] = useState<string | null>(null);
@@ -123,6 +124,20 @@ const App: React.FC = () => {
     }
   };
 
+  const generateMockHistory = (streak: number) => {
+    const dates = [];
+    const today = new Date();
+    
+    for (let i = 0; i < streak; i++) {
+        const d = new Date();
+        d.setDate(today.getDate() - i);
+        dates.push(d.toISOString().split('T')[0]);
+    }
+    
+    dates.push('2024-12-25', '2025-01-01', '2025-01-15', '2025-02-10');
+    return dates;
+  };
+
   if (needsApiKey) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-[#0f172a] p-6 text-center text-slate-200">
@@ -227,6 +242,9 @@ const App: React.FC = () => {
                 <div className="grid gap-8 lg:grid-cols-3 animate-in slide-in-from-left-4">
                   <div className="lg:col-span-2 space-y-8">
                     <StatsCard stats={userStats} isLoading={appState === AppState.LOADING_DATA} />
+                    <ActivityHeatmap 
+                        checkIns={userStats ? generateMockHistory(userStats.currentStreak) : []} 
+                    />
                     <div className="rounded-3xl border border-slate-800 bg-slate-900/40 p-10 shadow-2xl backdrop-blur-md">
                       <h3 className="mb-6 text-xl font-bold text-white">Your Progress</h3>
                       <StreakProgressBar currentStreak={userStats?.currentStreak || 0} />
@@ -271,3 +289,4 @@ const App: React.FC = () => {
 };
 
 export default App;
+

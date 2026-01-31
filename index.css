@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* CSS cho Heatmap - Dark Mode */
+.react-calendar-heatmap {
+    width: 100%;
+    font-size: 10px;
+    margin-top: 10px;
+}
+
+.react-calendar-heatmap .color-empty {
+    fill: #1e293b; /* slate-800 */
+    rx: 2px;
+}
+
+.react-calendar-heatmap .color-scale-1 { fill: #fed7aa; } /* Cam nhạt */
+.react-calendar-heatmap .color-scale-2 { fill: #fdba74; }
+.react-calendar-heatmap .color-scale-3 { fill: #f97316; }
+.react-calendar-heatmap .color-scale-4 { fill: #ea580c; }
+.react-calendar-heatmap .color-scale-5 { fill: #dc2626; } /* Đỏ đậm */
+
+.react-calendar-heatmap rect:hover {
+    stroke: #fff;
+    stroke-width: 1px;
+    cursor: pointer;
+}
