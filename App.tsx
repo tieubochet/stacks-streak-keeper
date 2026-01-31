@@ -16,6 +16,8 @@ import {
 import { UserStats, AppState, ActiveTab, GlobalStory } from './types';
 import { CheckCircle2, Loader2, Zap, LayoutDashboard, PenTool, Key, RefreshCw } from 'lucide-react';
 import { ActivityHeatmap } from './components/ActivityHeatmap';
+import { fetchLeaderboardData } from './services/stacks'; 
+import { LeaderboardEntry } from './types'; 
 
 const App: React.FC = () => {
   const [address, setAddress] = useState<string | null>(null);
@@ -25,6 +27,7 @@ const App: React.FC = () => {
   const [appState, setAppState] = useState<AppState>(AppState.IDLE);
   const [txId, setTxId] = useState<string | null>(null);
   const [needsApiKey, setNeedsApiKey] = useState<boolean>(false);
+  const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([]); //
 
   useEffect(() => {
     const init = async () => {
@@ -60,6 +63,8 @@ const App: React.FC = () => {
     try {
       const stats = await fetchUserStats(addr);
       setUserStats(stats);
+      const lb = await fetchLeaderboardData(addr);
+      setLeaderboardData(lb);
       setAppState(AppState.READY);
     } catch (error) {
       setAppState(AppState.READY);
@@ -251,7 +256,7 @@ const App: React.FC = () => {
                     </div>
                   </div>
                   <div className="lg:col-span-1">
-                    <Leaderboard data={[]} isLoading={false} />
+                    <Leaderboard data={leaderboardData} isLoading={appState === AppState.LOADING_DATA} />
                   </div>
                 </div>
               ) : (

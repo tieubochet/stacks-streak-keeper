@@ -11,6 +11,7 @@ import {
 } from '@stacks/transactions';
 import { openContractCall } from '@stacks/connect';
 import { UserStats, LeaderboardEntry, GlobalStory } from '../types';
+import { LEADERBOARD_CANDIDATES } from '../constants';
 
 // Return the network instance.
 const getNetwork = () => new StacksMainnet();
@@ -114,8 +115,39 @@ export const performCheckIn = async (onFinish: (data: any) => void, onCancel: ()
   });
 };
 
-export const fetchNftBalance = async (address: string) => 0; // Simplified
-export const fetchLeaderboardData = async (c: string[], u: string | null) => []; // Simplified
+export const fetchNftBalance = async (address: string) => 0;
+export const fetchLeaderboardData = async (
+  currentUserAddress: string | null
+): Promise<LeaderboardEntry[]> => {
+  const candidates = LEADERBOARD_CANDIDATES; 
+  const list: LeaderboardEntry[] = [];
+
+  
+  for (const addr of candidates) {
+    const stats = await fetchUserStats(addr); 
+    if (stats) {
+      list.push({
+        rank: 0, 
+        address: addr,
+        streak: stats.currentStreak,
+        total: stats.totalCheckins,
+        isCurrentUser: addr === currentUserAddress
+      });
+    }
+  }
+
+  
+  list.sort((a, b) => {
+    if (b.streak !== a.streak) return b.streak - a.streak;
+    return b.total - a.total;
+  });
+
+  
+  return list.map((item, index) => ({
+    ...item,
+    rank: index + 1
+  }));
+};
 
 
 export const getUserAddress = (): string | null => {
